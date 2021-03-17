@@ -9,4 +9,7 @@
     <string name="kakao_app_key">88196a983afb123d50af789d5249b4e0</string>
 
     <string name="tag_server">res_server</string>
+
+    <string name="login_ok">접속에 성공했쥐!</string>
+    <string name="login_failure">접속에 오류가 발생해 부럿쥐...</string>
 </resources>
