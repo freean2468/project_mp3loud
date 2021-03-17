@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Mp3loud</string>
+
+    <string name="host_name_for_service"></string>
+    <string name="host_name_for_development">http://10.0.2.2:8080/</string>
+
+    <string name="url_login">service/login/1?</string>
+
+    <string name="kakao_app_key">88196a983afb123d50af789d5249b4e0</string>
+
+    <string name="tag_server">res_server</string>
 </resources>
