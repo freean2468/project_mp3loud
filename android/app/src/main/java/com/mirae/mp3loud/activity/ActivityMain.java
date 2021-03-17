@@ -1,8 +1,10 @@
-package com.mirae.mp3loud;
+package com.mirae.mp3loud.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.mirae.mp3loud.R;
 
 public class ActivityMain extends AppCompatActivity {
 

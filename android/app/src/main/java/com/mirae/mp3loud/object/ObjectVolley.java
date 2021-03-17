@@ -1,4 +1,4 @@
-package com.mirae.mp3loud;
+package com.mirae.mp3loud.object;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,6 +14,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.mirae.mp3loud.R;
+import com.mirae.mp3loud.helper.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Mp3loud">
-        <activity android:name=".ActivityMain">
+        <activity android:name=".activity.ActivityMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
