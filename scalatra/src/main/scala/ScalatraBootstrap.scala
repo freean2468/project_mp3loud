@@ -19,9 +19,9 @@ class ScalatraBootstrap extends LifeCycle {
     }
     case _ => {
       Database.forURL(
-        conf.getString("localPostgres2.url"),
-        conf.getString("localPostgres2.user"),
-        conf.getString("localPostgres2.password")
+        conf.getString("localPostgres.url"),
+        conf.getString("localPostgres.user"),
+        conf.getString("localPostgres.password")
       )
     }
   }

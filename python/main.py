@@ -1,10 +1,17 @@
 import eyed3
 
 import time
+import pathlib
 from os import path
 
 from eyed3 import id3
 from eyed3 import load
+
+from pydub import AudioSegment
+
+AudioSegment.converter = "C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffmpeg.exe"
+AudioSegment.ffmpeg = "C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffmpeg.exe"
+AudioSegment.ffprobe ="C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffprobe.exe"
 
 current_home = path.expanduser('~')
 #search_dir = path.join(current_home + "/Music/iTunes/iTunes Media/Music/Rush/Chronicles (Disc 2)/2-03 Limelight.mp3")  # noqa
@@ -95,6 +102,23 @@ def duration_from_seconds(s):
                                                       int(s))
     return timelapsed
 
+fileName = "1.mp3"
+filePath = "{}\\1.mp3".format(pathlib.Path().absolute())
 
-track_info("1.mp3")
+ten_seconds = 10 * 1000
+
+track_info(fileName)
+song = AudioSegment.from_mp3(fileName)
+first10Seconds = song[:ten_seconds]
+first10Seconds.export(fileName+'-sample.mp3', format="mp3")
+
+import requests
+
+r = requests.get('http://127.0.0.1:8080/')
+
+print(r.status_code)
+print(r.headers)
+print(r.text)
+
+
 
