@@ -12,11 +12,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.mirae.mp3loud.R;
 import com.mirae.mp3loud.helper.Util;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -109,9 +111,9 @@ public class ObjectVolley {
      * @param listener 응답 성공 시 RequestLoginLister에서 jobToDo() 함수에서 로직을 구현할 것.
      * @param errorListener 응답 실패 시 Listener
      */
-    public void requestKakaoLogin(String no, int dayOfYear, RequestLoginListener listener, Response.ErrorListener errorListener) {
-        String url = hostName + ctx.getString(R.string.url_login) + "no=" + no + "&d=" + dayOfYear;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
+    public void requestKakaoLogin(String no, RequestLoginListener listener, StandardErrorListener errorListener) {
+        String url = hostName + ctx.getString(R.string.url_login) + "no=";
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
         addToRequestQueue(request);
     }
 
@@ -119,30 +121,23 @@ public class ObjectVolley {
      * RequstLogin 요청에 대한 응답 wrapper abstract class
      * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
      */
-    abstract public static class RequestLoginListener implements Response.Listener<JSONObject> {
+    abstract public static class RequestLoginListener implements Response.Listener<JSONArray> {
         protected String no;
         protected int dayOfYear;
         protected String answer;
         protected byte[] photo = new byte[]{};
 
         @Override
-        public void onResponse(JSONObject response) {
+        public void onResponse(JSONArray response) {
             try {
-                no = response.getString("no");
-                dayOfYear = response.getInt("dayOfYear");
-                answer = response.getString("answer");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if (!response.isNull("photo")) {
-                try {
-                    String sPhoto = response.getString("photo");
-                    photo = Util.stringToByteArray(sPhoto);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                for (int i = 0; i < response.length(); ++i) {
+                    JSONObject mp3 = response.getJSONObject(i);
+
+                    Log.d(ctx.getString(R.string.tag_server), mp3.toString());
                 }
+            } catch (JSONException je) {
+                je.printStackTrace();
             }
-//            Log.d("debug", "no : " + no + ", dayOfYear : " + dayOfYear + ", answer : " + answer + ", photo : " + photo);
             jobToDo();
         }
 

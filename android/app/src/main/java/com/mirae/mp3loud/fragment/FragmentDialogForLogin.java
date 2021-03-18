@@ -46,9 +46,9 @@ public class FragmentDialogForLogin extends DialogFragment {
          */
         ObjectVolley.getInstance(getContext()).requestKakaoLogin(
                 no,
-                Calendar.getInstance().get(Calendar.DAY_OF_YEAR),
                 new ObjectVolley.RequestLoginListener() {
-                    @Override public void jobToDo() {
+                    @Override
+                    public void jobToDo() {
                         progressBar.setVisibility(View.GONE);
                         textViewProgress.setText(getString(R.string.login_ok));
                         textViewProgress.setVisibility(View.VISIBLE);
@@ -63,11 +63,14 @@ public class FragmentDialogForLogin extends DialogFragment {
                         startActivity(intent);
                     }
                 },
-                error -> {
-                    Log.e(getString(R.string.tag_server), "RequestLogin error");
-                    progressBar.setVisibility(View.GONE);
-                    textViewProgress.setText(getString(R.string.login_failure));
-                    textViewProgress.setVisibility(View.VISIBLE);
+                new ObjectVolley.StandardErrorListener() {
+                    @Override
+                    public void jobToDo() {
+                        Log.d(getString(R.string.tag_server), "RequestLogin error");
+                        progressBar.setVisibility(View.GONE);
+                        textViewProgress.setText(getString(R.string.login_failure));
+                        textViewProgress.setVisibility(View.VISIBLE);
+                    }
                 }
         );
 

@@ -9,12 +9,12 @@ create table if not exists user_table(
 
 create table if not exists mp3_table(
 	id serial not null unique,
-	played_times bigint not null default 0,
+	played_times int not null default 0,
 	title varchar(30) not null,
 	artist varchar(30) not null,
 	play_length_in_sec int not null,
-	sample bytea,
-	origin bytea,
+	sample bytea not null,
+	origin bytea not null,
 	constraint pk_id primary key(id)
 );
 
