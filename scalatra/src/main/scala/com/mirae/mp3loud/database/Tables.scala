@@ -23,6 +23,15 @@ object Tables {
    */
   case class Mp3(title: String, artist: String, played_times: Int, origin: Array[Byte])
 
+  /** mp3 전송 시 4번째 Array[Byte]를 Base64 String으로 변환 후 전송하기 위한 case class
+   *
+   * @param title
+   * @param artist
+   * @param played_times
+   * @param converted Base64 기반 String
+   */
+  case class Mp3Converted(title: String, artist: String, played_times: Int, converted: String)
+
   /** like_table 의 한 레코드를 모방한 case class 자동 형변환에 사용
    *
    * @param no

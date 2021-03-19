@@ -20,7 +20,7 @@ import scala.concurrent.{ExecutionContext, Future}
  *
  */
 trait FileRoute extends ScalatraBase with JacksonJsonSupport with FutureSupport with QuerySupport with FileUploadSupport {
-  configureMultipartHandling(MultipartConfig(maxFileSize = Some(3*1024*1024)))
+  configureMultipartHandling(MultipartConfig(maxFileSize = Some(10*1024*1024)))
   /** Sets up automatic case class to JSON output serialization, required by the JValueResult trait. */
   protected implicit lazy val jsonFormats: Formats = DefaultFormats
 
@@ -67,30 +67,19 @@ trait FileRoute extends ScalatraBase with JacksonJsonSupport with FutureSupport 
    *
    */
   post("/sample") {
-    val file = fileParams("file");
-
+    val logger = LoggerFactory.getLogger(getClass)
+    
     fileParams.get("file") match {
       case Some(f) => {
         new AsyncResult() { override val is =
           Future {
+//            logger.info(s"f.get().length : ${f.get().length}")
             insertMp3(db, f, "title", "artist", 0)
           }
         }
       }
       case None => BadRequest("no file")
     }
-
-
-//    val file = fileParams("file");
-//
-//    <div>
-//      <h1>Received {file.getSize} bytes</h1>
-//      <h1>Content-type :  {file.contentType} </h1>
-//      <h1>name :  {file.name} </h1>
-//
-//      <h1>request.contentType : {request.contentType}</h1>
-//      <h1>request.contentLength : {request.getContentLength}</h1>
-//    </div>
   }
 
   /** 굳이 abusing 들에게 친절한 안내메세지를 보내지와 응답을 보내줄 필요는 없지 않을까?

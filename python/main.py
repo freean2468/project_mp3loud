@@ -9,9 +9,27 @@ from eyed3 import load
 
 from pydub import AudioSegment
 
-AudioSegment.converter = "C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffmpeg.exe"
-AudioSegment.ffmpeg = "C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffmpeg.exe"
-AudioSegment.ffprobe ="C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffprobe.exe"
+import os
+print(os.name)
+
+# >> postsix
+import platform
+print(platform.system())
+# >> Linux
+
+# 플랫폼에 맞는 구분자
+# Linux: Linux
+# Mac: Darwin
+# Windows: Windows
+
+if (platform.system() == 'Darwin') :
+    AudioSegment.converter = '/usr/local/bin/ffmpeg'
+    AudioSegment.ffmpeg = '/usr/local/bin/ffmpeg'
+    AudioSegment.ffprobe = '/usr/local/bin/ffprobe'
+else:
+    AudioSegment.converter = "C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffmpeg.exe"
+    AudioSegment.ffmpeg = "C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffmpeg.exe"
+    AudioSegment.ffprobe = "C:\\Users\\user\\Desktop\\workspace\\library\\ffmpeg\\bin\\ffprobe.exe"
 
 current_home = path.expanduser('~')
 #search_dir = path.join(current_home + "/Music/iTunes/iTunes Media/Music/Rush/Chronicles (Disc 2)/2-03 Limelight.mp3")  # noqa
@@ -105,12 +123,12 @@ def duration_from_seconds(s):
 fileName = "1.mp3"
 filePath = "{}\\1.mp3".format(pathlib.Path().absolute())
 
-ten_seconds = 10 * 1000
+# ten_seconds = 10 * 1000
 
 track_info(fileName)
-song = AudioSegment.from_mp3(fileName)
-first10Seconds = song[:ten_seconds]
-first10Seconds.export(fileName+'-sample.mp3', format="mp3")
+# song = AudioSegment.from_mp3(fileName)
+# first10Seconds = song[:ten_seconds]
+# first10Seconds.export(fileName+'-sample.mp3', format="mp3")
 
 import requests
 
@@ -122,7 +140,7 @@ import requests
 
 url = 'http://127.0.0.1:8080/file/sample'
 files = {
-    'file': (open('1.mp3-sample.mp3', 'rb'), 'application/octet-stream')
+    'file': open('1.mp3', 'rb')
 }
 
 r = requests.post(url, files=files)

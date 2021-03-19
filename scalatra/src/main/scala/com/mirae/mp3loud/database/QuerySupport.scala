@@ -1,6 +1,6 @@
 package com.mirae.mp3loud.database
 
-import com.mirae.mp3loud.database.Tables.{Mp3, Mp3s, User, mp3s, users}
+import com.mirae.mp3loud.database.Tables.{Mp3, Mp3Converted, Mp3s, User, mp3s, users}
 import com.mirae.mp3loud.helper.Util
 import org.scalatra.servlet.FileItem
 import org.scalatra.{ActionResult, NotFound, Ok}
@@ -30,12 +30,13 @@ trait QuerySupport {
   def insertMp3(db: Database, file: FileItem, title: String, artist: String, playLengthInSec: Int) = {
     val logger = LoggerFactory.getLogger(getClass)
     val prom = Promise[ActionResult]()
+//    logger.info(s"file.get().length : ${file.get().length}")
     insert(db, Mp3(title, artist, 0, file.get())) onComplete {
       case Failure(e) => {
         prom.failure(e)
       }
       case Success(s) => {
-        logger.debug(s"s : ${s}")
+//        logger.debug(s"s : ${s}")
         prom.complete(Try(Ok(s"${s} : i-ed")))
       }
     }
@@ -66,9 +67,7 @@ trait QuerySupport {
       }
       case Success(mp3) => {
         mp3 match {
-          case Some(m) => prom.complete(Try(Ok({
-            "origin" -> m.origin
-          })))
+          case Some(m) => prom.complete(Try(Ok({ "converted" -> Util.convertBytesArrayToBase64String(m.origin) })))
           case None => prom.complete(Try(NotFound("file not found")))
         }
       }
@@ -77,6 +76,7 @@ trait QuerySupport {
   }
 
   def retrieveMp3List(db: Database) = {
+    val logger = LoggerFactory.getLogger(getClass)
     val prom = Promise[ActionResult]()
     selectMp3All(db) onComplete {
       case Failure(e) => {
@@ -84,9 +84,11 @@ trait QuerySupport {
         e.printStackTrace()
       }
       case Success(mp3) => {
+        logger.info(s"origin.length : ${mp3(0).origin.length}")
         val convertedArray =
           for (m <- mp3)
-            yield(m.title, m.artist, m.played_times, Util.convertBytesArrayToString(m.origin))
+            yield(Mp3Converted(m.title, m.artist, m.played_times, Util.convertBytesArrayToBase64String(m.origin)))
+        logger.info(s"converted.length : ${convertedArray(0).converted.length}")
         prom.complete(Try(Ok(convertedArray)))
       }
     }
@@ -121,7 +123,7 @@ trait QuerySupport {
                 e.printStackTrace()
               }
               case Success(count) => {
-                logger.debug(s"no : ${no}")
+//                logger.debug(s"no : ${no}")
                 prom.complete(Try(Ok("res" -> 0)))
               }
             }

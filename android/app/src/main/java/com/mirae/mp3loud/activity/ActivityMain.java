@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.mirae.mp3loud.R;
+import com.mirae.mp3loud.helper.Util;
 import com.mirae.mp3loud.object.ObjectVolley;
 
 import java.io.File;
@@ -23,10 +25,11 @@ public class ActivityMain extends AppCompatActivity {
 
         ObjectVolley objectVolley = ObjectVolley.getInstance(this);
         objectVolley.requestMp3List(
-                new ObjectVolley.RequestMp3Listener() {
+                new ObjectVolley.RequestMp3ListListener() {
                     @Override
                     public void jobToDo() {
-                        playMp3(this.getOrigin());
+                        playMp3(Util.convertBase64StringToByteArray(this.getOrigin()));
+//                        PlayAudio(this.getOrigin());
                     }
                 },
                 new ObjectVolley.StandardErrorListener() {
@@ -61,6 +64,8 @@ public class ActivityMain extends AppCompatActivity {
 
             mediaPlayer.prepare();
             mediaPlayer.start();
+
+            Log.d("debug", "mediaPlayer started!");
         } catch (IOException ex) {
             String s = ex.toString();
             ex.printStackTrace();

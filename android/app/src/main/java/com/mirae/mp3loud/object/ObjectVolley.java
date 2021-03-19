@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * 웹서버와 통신을 담당하는 Volley Manager class
  * Singleton pattern 적용 
@@ -150,29 +152,32 @@ public class ObjectVolley {
 
 
 
-    public void requestMp3List(RequestMp3Listener listener, StandardErrorListener errorListener) {
+    public void requestMp3List(RequestMp3ListListener listener, StandardErrorListener errorListener) {
         String url = hostName + ctx.getString(R.string.url_mp3_list);
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
         addToRequestQueue(request);
     }
 
     /**
-     * RequstLogin 요청에 대한 응답 wrapper abstract class
+     * RequstMp3 요청에 대한 응답 wrapper abstract class
      * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
      */
-    abstract public static class RequestMp3Listener implements Response.Listener<JSONArray> {
+    abstract public static class RequestMp3ListListener implements Response.Listener<JSONArray> {
         private JSONArray jsonArray;
         private JSONObject mp3;
-        private byte[] origin;
+        private String origin;
 
         @Override
         public void onResponse(JSONArray response) {
             try {
                 for (int i = 0; i < response.length(); ++i) {
                     mp3 = response.getJSONObject(i);
-                    Log.d(ctx.getString(R.string.tag_server), "origin string : " + mp3.get("origin"));
-                    Log.d(ctx.getString(R.string.tag_server), "origin string to byte[] : " + mp3.get("origin").toString().getBytes());
-                    origin = mp3.get("origin").toString().getBytes();
+                    origin = mp3.get("converted").toString();
+                    Log.d(ctx.getString(R.string.tag_server), "base64 string length : " + origin.length());
+                }
+                if (origin == null) {
+                    Log.d("debug", "origin shouldn't be null!");
+                    throw new AssertionError("origin shouldn't be null!");
                 }
             } catch (JSONException je) {
                 je.printStackTrace();
@@ -182,7 +187,7 @@ public class ObjectVolley {
 
         public abstract void jobToDo();
         public JSONObject getMp3() { return mp3; }
-        public byte[] getOrigin() { return origin; }
+        public String getOrigin() { return origin; }
     }
 
 
