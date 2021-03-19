@@ -114,11 +114,20 @@ first10Seconds.export(fileName+'-sample.mp3', format="mp3")
 
 import requests
 
-r = requests.get('http://127.0.0.1:8080/')
+#r = requests.get('http://127.0.0.1:8080/')
 
-print(r.status_code)
-print(r.headers)
+#print(r.status_code)
+#print(r.headers)
+#print(r.text)
+
+url = 'http://127.0.0.1:8080/file/sample'
+files = {
+    'file': (open('1.mp3-sample.mp3', 'rb'), 'application/octet-stream')
+}
+
+r = requests.post(url, files=files)
 print(r.text)
+
 
 
 

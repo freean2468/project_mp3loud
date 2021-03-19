@@ -5,6 +5,8 @@
     <string name="host_name_for_development">http://10.0.2.2:8080/</string>
 
     <string name="url_login">service/login/1?</string>
+    <string name="url_mp3">file/sample</string>
+    <string name="url_mp3_list">file/mp3List</string>
 
     <string name="kakao_app_key">88196a983afb123d50af789d5249b4e0</string>
 

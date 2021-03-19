@@ -1,4 +1,4 @@
-import com.mirae.mp3loud.route.ServiceRouteServlet
+import com.mirae.mp3loud.route.{FileRouteServlet, ServiceRouteServlet}
 import com.typesafe.config.ConfigFactory
 import org.scalatra._
 import slick.jdbc.JdbcBackend.Database
@@ -43,5 +43,6 @@ class ScalatraBootstrap extends LifeCycle {
     }
 
     context.mount(new ServiceRouteServlet(serviceDb), "/service")
+    context.mount(new FileRouteServlet(serviceDb), "/file")
   }
 }

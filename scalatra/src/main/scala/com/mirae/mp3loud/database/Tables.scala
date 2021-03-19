@@ -16,16 +16,12 @@ object Tables {
 
   /** mp3_table 의 한 레코드를 모방한 case class 자동 형변환에 사용
    *
-   * @param id
-   * @param played_times
    * @param title
    * @param artist
-   * @param playLengthInSec
-   * @param sample
+   * @param played_times
    * @param origin
    */
-  case class Mp3(id: Int, played_times: Int, title: String, artist: String, playLengthInSec: Int,
-                 sample: Array[Byte], origin: Array[Byte])
+  case class Mp3(title: String, artist: String, played_times: Int, origin: Array[Byte])
 
   /** like_table 의 한 레코드를 모방한 case class 자동 형변환에 사용
    *
@@ -34,7 +30,7 @@ object Tables {
    * @param answer
    * @param photo
    */
-  case class Like(no: String, id: Int)
+  case class Like(no: String, title: String, artist: String)
 
   /** db의 user_table을 모방한 클래스
    *
@@ -59,17 +55,16 @@ object Tables {
    */
   class Mp3s(tag: Tag) extends Table[Mp3](tag, "mp3_table") {
     /** Columns */
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def playedTimes = column[Int]("played_times")
     def title = column[String]("title")
     def artist = column[String]("artist")
-    def playLengthInSec = column[Int]("play_length_in_sec")
-    def sample = column[Array[Byte]]("sample")
+    def playedTimes = column[Int]("played_times")
     def origin = column[Array[Byte]]("origin")
+
+    def pkTitleArtist = primaryKey("pk_title_artist", (title, artist))
 
     /** Every table needs a * projection with the same type as the table's type parameter */
     def * =
-      (id, playedTimes, title, artist, playLengthInSec, sample, origin) <> (Mp3.tupled, Mp3.unapply)
+      (title, artist, playedTimes, origin) <> (Mp3.tupled, Mp3.unapply)
   }
 
   /** mp3_table과의 쿼리를 담당할 변수
@@ -84,7 +79,8 @@ object Tables {
   class Likes(tag: Tag) extends Table[Like](tag, "like_table") {
     /** Columns */
     def no = column[String]("no")
-    def id = column[Int]("id")
+    def title = column[String]("title")
+    def artist = column[String]("artist")
 
     /** foreign key */
     def user =
@@ -94,12 +90,12 @@ object Tables {
 
     /** foreign key */
     def mp3 =
-      foreignKey("fk_id", id, mp3s)(_.id,
+      foreignKey("fk_title_artist", (title, artist), mp3s)(mp => (mp.title, mp.artist),
         onUpdate = ForeignKeyAction.Cascade,
         onDelete = ForeignKeyAction.Cascade)
 
     def * =
-      (no, id) <> (Like.tupled, Like.unapply)
+      (no, title, artist) <> (Like.tupled, Like.unapply)
   }
 
   /** db의 like_table과의 쿼리를 담당할 변수

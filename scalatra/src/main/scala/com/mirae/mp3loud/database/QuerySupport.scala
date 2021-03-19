@@ -1,6 +1,8 @@
 package com.mirae.mp3loud.database
 
 import com.mirae.mp3loud.database.Tables.{Mp3, Mp3s, User, mp3s, users}
+import com.mirae.mp3loud.helper.Util
+import org.scalatra.servlet.FileItem
 import org.scalatra.{ActionResult, NotFound, Ok}
 import org.slf4j.LoggerFactory
 import slick.dbio.DBIO
@@ -8,6 +10,7 @@ import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.Promise
+import scala.reflect.io.File
 import scala.util.{Failure, Success, Try}
 
 
@@ -24,6 +27,21 @@ trait QuerySupport {
   def insert(db: Database, user: User) = db.run(users += user)
   def insert(db: Database, mp3: Mp3) = db.run(mp3s += mp3)
 
+  def insertMp3(db: Database, file: FileItem, title: String, artist: String, playLengthInSec: Int) = {
+    val logger = LoggerFactory.getLogger(getClass)
+    val prom = Promise[ActionResult]()
+    insert(db, Mp3(title, artist, 0, file.get())) onComplete {
+      case Failure(e) => {
+        prom.failure(e)
+      }
+      case Success(s) => {
+        logger.debug(s"s : ${s}")
+        prom.complete(Try(Ok(s"${s} : i-ed")))
+      }
+    }
+    prom.future
+  }
+
   /** Read
    *
    */
@@ -36,15 +54,50 @@ trait QuerySupport {
   def findUser(db: Database, no: String) =
     db.run(users.filter(_.no === no).result.headOption)
 
-  def findMp3(db: Database, id: Int) =
-    db.run(mp3s.filter(_.id === id).result.headOption)
+  def findMp3(db: Database, title: String, artist: String) =
+    db.run(mp3s.filter(_.title === title).filter(_.artist === artist).result.headOption)
+
+  def retrieveMp3(db: Database, title: String, artist: String) = {
+    val prom = Promise[ActionResult]()
+    findMp3(db, title, artist) onComplete {
+      case Failure(e) => {
+        prom.failure(e)
+        e.printStackTrace()
+      }
+      case Success(mp3) => {
+        mp3 match {
+          case Some(m) => prom.complete(Try(Ok({
+            "origin" -> m.origin
+          })))
+          case None => prom.complete(Try(NotFound("file not found")))
+        }
+      }
+    }
+    prom.future
+  }
+
+  def retrieveMp3List(db: Database) = {
+    val prom = Promise[ActionResult]()
+    selectMp3All(db) onComplete {
+      case Failure(e) => {
+        prom.failure(e)
+        e.printStackTrace()
+      }
+      case Success(mp3) => {
+        val convertedArray =
+          for (m <- mp3)
+            yield(m.title, m.artist, m.played_times, Util.convertBytesArrayToString(m.origin))
+        prom.complete(Try(Ok(convertedArray)))
+      }
+    }
+    prom.future
+  }
 
 //  def findLikes(db: Database, no: String) =
 //    db.run(diaries.filter(d =>
 //      d.no === no && (d.dayOfYear >= firstDay && d.dayOfYear <= lastDay)).result)
 
-  /**
-   * 유저가 로그인 시 호출하는 함수. 회원 번호를 받아 user_table에 계정이 없으면 새로 생성한다.
+  /** 유저가 로그인 시 호출하는 함수. 회원 번호를 받아 user_table에 계정이 없으면 새로 생성한다.
    *
    * @param db
    * @param no 유저 카카오톡 회원 번호
@@ -69,20 +122,12 @@ trait QuerySupport {
               }
               case Success(count) => {
                 logger.debug(s"no : ${no}")
-                prom.complete(Try(Ok(count)))
+                prom.complete(Try(Ok("res" -> 0)))
               }
             }
           }
           case Some(x) => {
-            selectMp3All(db) onComplete {
-              case Success(r) => {
-                prom.complete(Try(Ok(r)))
-              }
-              case Failure(e) => {
-                prom.failure(e)
-                e.printStackTrace()
-              }
-            }
+            prom.complete(Try(Ok("res" -> 1)))
           }
         }
       }

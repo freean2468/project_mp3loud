@@ -105,6 +105,16 @@ public class ObjectVolley {
         return imageLoader;
     }
 
+
+
+
+
+
+
+
+
+
+
     /**
      * 카카오 로그인 후 회원번호로 다시 자체 웹서버에 회원 정보를 요청하는 함수
      * @param no 카카오 회원 번호
@@ -112,7 +122,36 @@ public class ObjectVolley {
      * @param errorListener 응답 실패 시 Listener
      */
     public void requestKakaoLogin(String no, RequestLoginListener listener, StandardErrorListener errorListener) {
-        String url = hostName + ctx.getString(R.string.url_login) + "no=";
+        String url = hostName + ctx.getString(R.string.url_login) + "no=" + no;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
+        addToRequestQueue(request);
+    }
+
+    /**
+     * RequstLogin 요청에 대한 응답 wrapper abstract class
+     * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
+     */
+    abstract public static class RequestLoginListener implements Response.Listener<JSONObject> {
+        protected String no;
+        protected int dayOfYear;
+        protected String answer;
+        protected byte[] photo = new byte[]{};
+
+        @Override
+        public void onResponse(JSONObject response) {
+            jobToDo();
+        }
+
+        public abstract void jobToDo();
+    }
+
+
+
+
+
+
+    public void requestMp3List(RequestMp3Listener listener, StandardErrorListener errorListener) {
+        String url = hostName + ctx.getString(R.string.url_mp3_list);
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
         addToRequestQueue(request);
     }
@@ -121,19 +160,19 @@ public class ObjectVolley {
      * RequstLogin 요청에 대한 응답 wrapper abstract class
      * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
      */
-    abstract public static class RequestLoginListener implements Response.Listener<JSONArray> {
-        protected String no;
-        protected int dayOfYear;
-        protected String answer;
-        protected byte[] photo = new byte[]{};
+    abstract public static class RequestMp3Listener implements Response.Listener<JSONArray> {
+        private JSONArray jsonArray;
+        private JSONObject mp3;
+        private byte[] origin;
 
         @Override
         public void onResponse(JSONArray response) {
             try {
                 for (int i = 0; i < response.length(); ++i) {
-                    JSONObject mp3 = response.getJSONObject(i);
-
-                    Log.d(ctx.getString(R.string.tag_server), mp3.toString());
+                    mp3 = response.getJSONObject(i);
+                    Log.d(ctx.getString(R.string.tag_server), "origin string : " + mp3.get("origin"));
+                    Log.d(ctx.getString(R.string.tag_server), "origin string to byte[] : " + mp3.get("origin").toString().getBytes());
+                    origin = mp3.get("origin").toString().getBytes();
                 }
             } catch (JSONException je) {
                 je.printStackTrace();
@@ -142,7 +181,15 @@ public class ObjectVolley {
         }
 
         public abstract void jobToDo();
+        public JSONObject getMp3() { return mp3; }
+        public byte[] getOrigin() { return origin; }
     }
+
+
+
+
+
+
 
     /**
      *  에러 시 서버 응답 코드를 자동으로 알려주는 class
