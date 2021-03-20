@@ -16,13 +16,14 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.mirae.mp3loud.R;
-import com.mirae.mp3loud.helper.Util;
+import com.mirae.mp3loud.adapter.AdapterPlayList;
+import com.mirae.mp3loud.caseclass.Mp3Info;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
+import static com.mirae.mp3loud.caseclass.Mp3Info.TAKEN;
 
 /**
  * 웹서버와 통신을 담당하는 Volley Manager class
@@ -163,31 +164,57 @@ public class ObjectVolley {
      * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
      */
     abstract public static class RequestMp3ListListener implements Response.Listener<JSONArray> {
-        private JSONArray jsonArray;
-        private JSONObject mp3;
-        private String origin;
-
         @Override
         public void onResponse(JSONArray response) {
             try {
                 for (int i = 0; i < response.length(); ++i) {
-                    mp3 = response.getJSONObject(i);
-                    origin = mp3.get("converted").toString();
-                    Log.d(ctx.getString(R.string.tag_server), "base64 string length : " + origin.length());
-                }
-                if (origin == null) {
-                    Log.d("debug", "origin shouldn't be null!");
-                    throw new AssertionError("origin shouldn't be null!");
+                    JSONObject mp3Info = response.getJSONObject(i);
+
+                    if (mp3Info == null) {
+                        Log.d("debug", "origin shouldn't be null!");
+                        throw new AssertionError("origin shouldn't be null!");
+                    }
+
+                    String genre = mp3Info.get("genre").toString();
+                    String title = mp3Info.get("title").toString();
+                    String artist = mp3Info.get("artist").toString();
+                    String image = mp3Info.get("image").toString();
+                    int playedTimes = Integer.parseInt(mp3Info.get("playedTimes").toString());
+
+                    Log.d("debug", "playedTimes : " + playedTimes);
+
+                    if (genre == null) {
+                        Log.d("debug", "genre shouldn't be null!");
+                        throw new AssertionError("genre shouldn't be null!");
+                    }
+
+                    if (title == null) {
+                        Log.d("debug", "title shouldn't be null!");
+                        throw new AssertionError("title shouldn't be null!");
+                    }
+
+                    if (artist == null) {
+                        Log.d("debug", "artist shouldn't be null!");
+                        throw new AssertionError("artist shouldn't be null!");
+                    }
+
+                    if (image == null) {
+                        Log.d("debug", "image shouldn't be null!");
+                        throw new AssertionError("image shouldn't be null!");
+                    }
+
+                    AdapterPlayList.getInstance().addMp3(new Mp3Info(TAKEN, genre, title, artist, image, playedTimes));
+                    Log.d(ctx.getString(R.string.tag_server), "base64 string image length : " + image.length());
                 }
             } catch (JSONException je) {
                 je.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             jobToDo();
         }
 
         public abstract void jobToDo();
-        public JSONObject getMp3() { return mp3; }
-        public String getOrigin() { return origin; }
     }
 
 

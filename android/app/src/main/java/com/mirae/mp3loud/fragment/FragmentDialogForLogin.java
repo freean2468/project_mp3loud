@@ -18,8 +18,6 @@ import com.mirae.mp3loud.R;
 import com.mirae.mp3loud.activity.ActivityMain;
 import com.mirae.mp3loud.object.ObjectVolley;
 
-import java.util.Calendar;
-
 public class FragmentDialogForLogin extends DialogFragment {
     private String no;
 
@@ -52,12 +50,6 @@ public class FragmentDialogForLogin extends DialogFragment {
                         progressBar.setVisibility(View.GONE);
                         textViewProgress.setText(getString(R.string.login_ok));
                         textViewProgress.setVisibility(View.VISIBLE);
-                        Fragment01 fragment01 = Fragment01.getInstance();
-                        fragment01.setNo(this.no);
-                        fragment01.setDayOfYear(this.dayOfYear);
-                        fragment01.setAnswer(this.answer);
-                        fragment01.setPhoto(this.photo);
-
                         Intent intent = new Intent(getContext(), ActivityMain.class);
                         intent.putExtra("no", no);
                         startActivity(intent);

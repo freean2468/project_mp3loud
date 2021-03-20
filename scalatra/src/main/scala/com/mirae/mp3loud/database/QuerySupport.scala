@@ -87,9 +87,9 @@ trait QuerySupport {
 //        logger.info(s"mp3.length : ${mp3(0).mp3.length}")
         val convertedArray =
           for (m <- mp3)
-            yield(Mp3Converted(m.genre, m.title, m.artist, m.played_times, Util.convertBytesArrayToBase64String(m.image)))
-        convertedArray map (elem => logger.info(s"imageConverted.length : ${elem.imageConverted.length}"))
-        
+            yield(Mp3Converted(m.genre, m.title, m.artist, m.playedTimes, Util.convertBytesArrayToBase64String(m.image)))
+        convertedArray map (elem => logger.info(s"image.length : ${elem.image.length}"))
+
         prom.complete(Try(Ok(convertedArray)))
       }
     }
