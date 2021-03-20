@@ -21,16 +21,16 @@ object Tables {
    * @param played_times
    * @param origin
    */
-  case class Mp3(title: String, artist: String, played_times: Int, origin: Array[Byte])
+  case class Mp3(genre: String, title: String, artist: String, played_times: Int, mp3: Array[Byte], image: Array[Byte])
 
-  /** mp3 전송 시 4번째 Array[Byte]를 Base64 String으로 변환 후 전송하기 위한 case class
+  /** mp3 List 전송 시 4번째 용량이 큰 mp3를 제외하고 전송하기 위한 case class
    *
    * @param title
    * @param artist
    * @param played_times
-   * @param converted Base64 기반 String
+   * @param imageConverted Base64 기반 String
    */
-  case class Mp3Converted(title: String, artist: String, played_times: Int, converted: String)
+  case class Mp3Converted(genre: String, title: String, artist: String, played_times: Int, imageConverted: String)
 
   /** like_table 의 한 레코드를 모방한 case class 자동 형변환에 사용
    *
@@ -64,16 +64,18 @@ object Tables {
    */
   class Mp3s(tag: Tag) extends Table[Mp3](tag, "mp3_table") {
     /** Columns */
+    def genre = column[String]("genre")
     def title = column[String]("title")
     def artist = column[String]("artist")
     def playedTimes = column[Int]("played_times")
-    def origin = column[Array[Byte]]("origin")
+    def mp3 = column[Array[Byte]]("mp3")
+    def image = column[Array[Byte]]("image")
 
     def pkTitleArtist = primaryKey("pk_title_artist", (title, artist))
 
     /** Every table needs a * projection with the same type as the table's type parameter */
     def * =
-      (title, artist, playedTimes, origin) <> (Mp3.tupled, Mp3.unapply)
+      (genre, title, artist, playedTimes, mp3, image) <> (Mp3.tupled, Mp3.unapply)
   }
 
   /** mp3_table과의 쿼리를 담당할 변수

@@ -27,11 +27,11 @@ trait QuerySupport {
   def insert(db: Database, user: User) = db.run(users += user)
   def insert(db: Database, mp3: Mp3) = db.run(mp3s += mp3)
 
-  def insertMp3(db: Database, file: FileItem, title: String, artist: String, playLengthInSec: Int) = {
+  def insertMp3(db: Database, mp3: FileItem, image: FileItem, genre: String, title: String, artist: String, playLengthInSec: Int) = {
     val logger = LoggerFactory.getLogger(getClass)
     val prom = Promise[ActionResult]()
 //    logger.info(s"file.get().length : ${file.get().length}")
-    insert(db, Mp3(title, artist, 0, file.get())) onComplete {
+    insert(db, Mp3(genre, title, artist, 0, mp3.get(), image.get())) onComplete {
       case Failure(e) => {
         prom.failure(e)
       }
@@ -67,7 +67,7 @@ trait QuerySupport {
       }
       case Success(mp3) => {
         mp3 match {
-          case Some(m) => prom.complete(Try(Ok({ "converted" -> Util.convertBytesArrayToBase64String(m.origin) })))
+          case Some(m) => prom.complete(Try(Ok({ "converted" -> Util.convertBytesArrayToBase64String(m.mp3) })))
           case None => prom.complete(Try(NotFound("file not found")))
         }
       }
@@ -84,11 +84,12 @@ trait QuerySupport {
         e.printStackTrace()
       }
       case Success(mp3) => {
-        logger.info(s"origin.length : ${mp3(0).origin.length}")
+//        logger.info(s"mp3.length : ${mp3(0).mp3.length}")
         val convertedArray =
           for (m <- mp3)
-            yield(Mp3Converted(m.title, m.artist, m.played_times, Util.convertBytesArrayToBase64String(m.origin)))
-        logger.info(s"converted.length : ${convertedArray(0).converted.length}")
+            yield(Mp3Converted(m.genre, m.title, m.artist, m.played_times, Util.convertBytesArrayToBase64String(m.image)))
+        convertedArray map (elem => logger.info(s"imageConverted.length : ${elem.imageConverted.length}"))
+        
         prom.complete(Try(Ok(convertedArray)))
       }
     }

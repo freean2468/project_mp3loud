@@ -66,19 +66,28 @@ trait FileRoute extends ScalatraBase with JacksonJsonSupport with FutureSupport 
   /** post
    *
    */
-  post("/sample") {
+  post("/upload/:id") {
     val logger = LoggerFactory.getLogger(getClass)
-    
-    fileParams.get("file") match {
-      case Some(f) => {
-        new AsyncResult() { override val is =
-          Future {
-//            logger.info(s"f.get().length : ${f.get().length}")
-            insertMp3(db, f, "title", "artist", 0)
+    val genre = params.getOrElse("genre", halt(400))
+    val title = params.getOrElse("title", halt(400))
+    val artist = params.getOrElse("artist", halt(400))
+    val mp3 = fileParams.get("mp3")
+    val image = fileParams.get("image")
+
+    mp3 match {
+      case None => BadRequest("cannot find file")
+      case Some(mp3Bytes) => {
+        image match {
+          case None => BadRequest("cannot find file")
+          case Some(imageBytes) => {
+            new AsyncResult() { override val is =
+              Future {
+                insertMp3(db, mp3Bytes, imageBytes, genre, title, artist, 0)
+              }
+            }
           }
         }
       }
-      case None => BadRequest("no file")
     }
   }
 

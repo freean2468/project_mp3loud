@@ -8,10 +8,12 @@ create table if not exists user_table(
 );
 
 create table if not exists mp3_table(
+	genre varchar(15) not null,
 	title varchar(30) not null,
 	artist varchar(30) not null,
 	played_times int not null default 0,
-	origin bytea not null,
+	mp3 bytea not null,
+	image bytea not null,
 	constraint pk_id primary key(title, artist)
 );
 
