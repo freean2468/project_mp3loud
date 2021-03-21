@@ -45,7 +45,7 @@ trait FileRoute extends ScalatraBase with JacksonJsonSupport with FutureSupport 
     }
   }
 
-  get("/sample") {
+  get("/mp3/:id") {
     new AsyncResult() { override val is =
       Future {
         contentType = formats("json")

@@ -59,7 +59,9 @@ trait QuerySupport {
     db.run(mp3s.filter(_.title === title).filter(_.artist === artist).result.headOption)
 
   def retrieveMp3(db: Database, title: String, artist: String) = {
+    val logger = LoggerFactory.getLogger(getClass)
     val prom = Promise[ActionResult]()
+
     findMp3(db, title, artist) onComplete {
       case Failure(e) => {
         prom.failure(e)
@@ -67,7 +69,7 @@ trait QuerySupport {
       }
       case Success(mp3) => {
         mp3 match {
-          case Some(m) => prom.complete(Try(Ok({ "converted" -> Util.convertBytesArrayToBase64String(m.mp3) })))
+          case Some(m) => prom.complete(Try(Ok({ "mp3" -> Util.convertBytesArrayToBase64String(m.mp3) })))
           case None => prom.complete(Try(NotFound("file not found")))
         }
       }

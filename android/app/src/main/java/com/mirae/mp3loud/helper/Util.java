@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class Util {
@@ -38,5 +39,10 @@ public class Util {
                         Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(
                 activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    public static String secondsTommssFormat(int seconds) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss");
+        return timeFormat.format(seconds);
     }
 }

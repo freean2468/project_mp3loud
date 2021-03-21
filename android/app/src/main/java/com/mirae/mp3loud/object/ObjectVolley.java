@@ -160,7 +160,7 @@ public class ObjectVolley {
     }
 
     /**
-     * RequstMp3 요청에 대한 응답 wrapper abstract class
+     * RequstMp3List 요청에 대한 응답 wrapper abstract class
      * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
      */
     abstract public static class RequestMp3ListListener implements Response.Listener<JSONArray> {
@@ -216,6 +216,52 @@ public class ObjectVolley {
 
         public abstract void jobToDo();
     }
+
+
+
+
+
+
+    public void requestMp3(String title, String artist, RequestMp3Listener listener, StandardErrorListener errorListener) {
+        String url = hostName + ctx.getString(R.string.url_mp3) + "title=" + title + "&artist=" + artist;
+        Log.d("debug", url);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
+        addToRequestQueue(request);
+    }
+
+    /**
+     * RequstMp3 요청에 대한 응답 wrapper abstract class
+     * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
+     */
+    abstract public static class RequestMp3Listener implements Response.Listener<JSONObject> {
+        private String mp3;
+
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                mp3 = response.get("mp3").toString();
+                Log.d("debug", mp3.toString());
+
+                if (mp3 == null) {
+                    Log.d("debug", "mp3 shouldn't be null!");
+                    throw new AssertionError("mp3 shouldn't be null!");
+                }
+            } catch (JSONException je) {
+                je.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            jobToDo();
+        }
+
+        public abstract void jobToDo();
+
+        public String getMp3() {
+            return mp3;
+        }
+    }
+
+
 
 
 

@@ -5,7 +5,7 @@
     <string name="host_name_for_development">http://10.0.2.2:8080/</string>
 
     <string name="url_login">service/login/1?</string>
-    <string name="url_mp3">file/sample</string>
+    <string name="url_mp3">file/mp3/1?</string>
     <string name="url_mp3_list">file/mp3List</string>
 
     <string name="kakao_app_key">88196a983afb123d50af789d5249b4e0</string>
@@ -15,11 +15,11 @@
     <string name="login_ok">접속에 성공했쥐!</string>
     <string name="login_failure">접속에 오류가 발생해 부럿쥐...</string>
 
-    <string name="shared_preferences_file_key">azrahamcucuzicanon</string>
-    <string name="shared_preferences_title_key">ahaiuhilahliufh</string>
-    <string name="shared_preferences_artist_key">agaiugfayeggah</string>
-    <string name="shared_preferences_genre_key">ueiwaibiui</string>
-    <string name="shared_preferences_image_key">hilruhvaiugbryiu</string>
-    <string name="shared_preferences_played_times_key">liwerughaliu</string>
-    <string name="shared_preferences_position_key">ergiuweooeofwuho</string>
+    <string name="shared_preferences_file_key">file_key</string>
+    <string name="shared_preferences_title_key">title_key</string>
+    <string name="shared_preferences_artist_key">artist_key</string>
+    <string name="shared_preferences_genre_key">genre_key</string>
+    <string name="shared_preferences_image_key">image_key</string>
+    <string name="shared_preferences_played_times_key">played_times_key</string>
+    <string name="shared_preferences_position_key">position_key</string>
 </resources>

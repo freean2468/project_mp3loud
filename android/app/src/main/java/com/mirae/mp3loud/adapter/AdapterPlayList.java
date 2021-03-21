@@ -17,6 +17,7 @@ import com.mirae.mp3loud.activity.ActivityMain;
 import com.mirae.mp3loud.caseclass.Mp3Info;
 import com.mirae.mp3loud.fragment.Fragment02;
 import com.mirae.mp3loud.helper.Util;
+import com.mirae.mp3loud.object.ObjectMp3Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +144,6 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
 
         @Override
         public void onClick(View view) {
-//            Log.d("debug", "clicked : " + getAdapterPosition());
             Mp3Info mp3Info = playList.get(getAdapterPosition());
             Context context = view.getContext();
             SharedPreferences sharedPref =
@@ -157,9 +157,12 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
             editor.putInt(context.getString(R.string.shared_preferences_played_times_key), mp3Info.getPlayedTimes());
             editor.putInt(context.getString(R.string.shared_preferences_position_key), getAdapterPosition());
             editor.putString(context.getString(R.string.shared_preferences_image_key), mp3Info.getImage());
+
+            /**
+             * synchronous
+             */
             editor.commit();
             ActivityMain.viewPager2.setCurrentItem(1);
-//            Fragment02.getInstance().setPlayer(playList.get(getAdapterPosition()), getAdapterPosition());
         }
 
         public ImageView getImageViewAlbumCover() { return imageViewAlbumCover; }

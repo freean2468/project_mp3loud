@@ -4,14 +4,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,15 +23,10 @@ import com.mirae.mp3loud.R;
 import com.mirae.mp3loud.adapter.AdapterPlayList;
 import com.mirae.mp3loud.caseclass.Mp3Info;
 import com.mirae.mp3loud.helper.Util;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.mirae.mp3loud.object.ObjectMp3Player;
+import com.mirae.mp3loud.object.ObjectVolley;
 
 public class Fragment02 extends Fragment {
-    private MediaPlayer mediaPlayer = new MediaPlayer();
-
     private static Fragment02 instance = null;
     private LinearLayout linearLayoutLeft;
     private LinearLayout linearLayoutRight;
@@ -38,9 +34,15 @@ public class Fragment02 extends Fragment {
     private TextView textViewTitle;
     private TextView textViewArtist;
     private TextView textViewGenre;
+    private ImageButton imageButtonTogglePlay;
     private ImageButton imageButtonLike;
     private ImageButton imageButtonToStart;
     private ImageButton imageButtonRepetition;
+
+    private SeekBar seekBarPlay;
+    private SeekBar seekBarVolume;
+    private TextView textViewCurrentPosition;
+    private TextView textViewRemainedPosition;
 
     private Fragment02() {
 
@@ -67,6 +69,11 @@ public class Fragment02 extends Fragment {
         imageButtonLike = view.findViewById(R.id.imageButtonLike);
         imageButtonToStart = view.findViewById(R.id.imageButtonToStart);
         imageButtonRepetition = view.findViewById(R.id.imageButtonRepetition);
+        imageButtonTogglePlay = view.findViewById(R.id.imageButtonTogglePlay);
+        seekBarPlay = view.findViewById(R.id.seekBarPlay);
+        seekBarVolume = view.findViewById(R.id.seekBarVolume);
+        textViewCurrentPosition = view.findViewById(R.id.textViewCurrentPosition);
+        textViewRemainedPosition = view.findViewById(R.id.textViewRemainedPosition);
 
         return view;
     }
@@ -74,6 +81,8 @@ public class Fragment02 extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        ObjectMp3Player.getInstance(getActivity()).pause();
 
         SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.shared_preferences_file_key), Context.MODE_PRIVATE);
         int playedTimes = sharedPref.getInt(getString(R.string.shared_preferences_played_times_key), 0);
@@ -84,6 +93,22 @@ public class Fragment02 extends Fragment {
         String image = sharedPref.getString(getString(R.string.shared_preferences_image_key), "no image");
 
         setPlayer(new Mp3Info(Mp3Info.NOT_TAKEN_YET, genre, title, artist, image, playedTimes), position);
+
+        ObjectVolley objectVolley = ObjectVolley.getInstance(getContext());
+        objectVolley.requestMp3(title, artist, new ObjectVolley.RequestMp3Listener() {
+            @Override
+            public void jobToDo() {
+                ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+                objectMp3Player.init(getContext(), Util.convertBase64StringToByteArray(this.getMp3()));
+                objectMp3Player.setUI(seekBarPlay, textViewCurrentPosition, textViewRemainedPosition);
+                objectMp3Player.play();
+            }
+        }, new ObjectVolley.StandardErrorListener() {
+            @Override
+            public void jobToDo() {
+
+            }
+        });
     }
 
     private void setPlayer(Mp3Info mp3Info, int position) {
@@ -114,50 +139,65 @@ public class Fragment02 extends Fragment {
         textViewGenre.setText(mp3Info.getGenre());
         textViewTitle.setText(mp3Info.getTitle());
 
-        imageButtonLike.setOnTouchListener((v, e) -> {
-
-            return false;
+        imageButtonTogglePlay.setOnClickListener(v -> {
+            ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+            if (objectMp3Player.getMediaPlayer() != null) {
+                if (objectMp3Player.getMediaPlayer().isPlaying() == true) {
+                    objectMp3Player.pause();
+                } else {
+                    objectMp3Player.play();
+                }
+            }
         });
 
-        imageButtonToStart.setOnTouchListener((v, e) -> {
+        imageButtonLike.setOnClickListener(v -> {
 
-            return false;
         });
 
-        imageButtonRepetition.setOnTouchListener((v, e) -> {
-
-            return false;
+        imageButtonToStart.setOnClickListener(v -> {
+            ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+            if (objectMp3Player.getMediaPlayer() != null) {
+             objectMp3Player.getMediaPlayer().seekTo(0);
+            }
         });
-    }
 
-    private void playMp3(Context context, byte[] mp3SoundByteArray) {
-        try {
-            // create temp file that will hold byte array
-            File tempMp3 = File.createTempFile("kurchina", "mp3", context.getCacheDir());
-            tempMp3.deleteOnExit();
-            FileOutputStream fos = new FileOutputStream(tempMp3);
-            fos.write(mp3SoundByteArray);
-            fos.close();
+        imageButtonRepetition.setOnClickListener(v -> {
+            ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+            if (objectMp3Player.getMediaPlayer() != null) {
+                if (objectMp3Player.getMediaPlayer().isLooping() == true) {
+                    objectMp3Player.getMediaPlayer().setLooping(false);
+                } else {
+                    objectMp3Player.getMediaPlayer().setLooping(true);
+                }
+            }
+        });
 
-            // resetting mediaplayer instance to evade problems
-            mediaPlayer.reset();
+        seekBarPlay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+                MediaPlayer mediaPlayer = objectMp3Player.getMediaPlayer();
 
-            // In case you run into issues with threading consider new instance like:
-            // MediaPlayer mediaPlayer = new MediaPlayer();
+                if (seekBarPlay.isPressed() == true && mediaPlayer != null) {
+                    textViewCurrentPosition.setText(Util.secondsTommssFormat(progress));
+                    textViewRemainedPosition.setText(Util.secondsTommssFormat(mediaPlayer.getDuration() - progress));
+                }
+            }
 
-            // Tried passing path directly, but kept getting
-            // "Prepare failed.: status=0x1"
-            // so using file descriptor instead
-            FileInputStream fis = new FileInputStream(tempMp3);
-            mediaPlayer.setDataSource(fis.getFD());
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                ObjectMp3Player.getInstance(getActivity()).interruptUiThread();
+            }
 
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-
-            Log.d("debug", "mediaPlayer started!");
-        } catch (IOException ex) {
-            String s = ex.toString();
-            ex.printStackTrace();
-        }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+                MediaPlayer mediaPlayer = objectMp3Player.getMediaPlayer();
+                if (mediaPlayer != null) {
+                    mediaPlayer.seekTo(seekBar.getProgress());
+                    objectMp3Player.updateUI();
+                }
+            }
+        });
     }
 }
