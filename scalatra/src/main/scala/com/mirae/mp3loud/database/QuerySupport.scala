@@ -171,6 +171,29 @@ trait QuerySupport {
 //    db.run(updateAction)
 //  }
 
+  def increasePlayedTimes(db: Database, title: String, artist: String) = {
+    val prom = Promise[ActionResult]()
+    findMp3(db, title, artist) onComplete {
+      case Failure(e) => {
+        prom.failure(e)
+        e.printStackTrace()
+      }
+      case Success(s) => {
+        db.run((for {mp3 <- mp3s if mp3.title === title && mp3.artist === artist} yield mp3.playedTimes).update(s.get.playedTimes+1)) onComplete {
+          case Failure(e) => {
+            prom.failure(e)
+            e.printStackTrace()
+          }
+          case Success(count) => {
+            prom.complete(Try(Ok(count)))
+          }
+        }
+      }
+    }
+
+    prom.future
+  }
+
   /** Delete
    *
    */

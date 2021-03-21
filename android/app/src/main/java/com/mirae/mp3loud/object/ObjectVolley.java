@@ -359,6 +359,25 @@ public class ObjectVolley {
 
 
 
+    public void requestIncrementPlayedTimes(String title, String artist, RequestPlayedTimesListener listener, StandardErrorListener errorListener) {
+        String url = hostName + ctx.getString(R.string.url_played_times_increment) + "title=" + title + "&artist=" + artist;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
+        addToRequestQueue(request);
+    }
+
+    /**
+     * RequstLike 요청에 대한 응답 wrapper abstract class
+     * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
+     */
+    abstract public static class RequestPlayedTimesListener implements Response.Listener<JSONObject> {
+        @Override
+        public void onResponse(JSONObject response) {
+            jobToDo();
+        }
+
+        public abstract void jobToDo();
+    }
+
 
 
 

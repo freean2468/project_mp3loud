@@ -80,6 +80,8 @@ public class ActivityLogin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        deleteSharedPreferences(getString(R.string.shared_preferences_file_key));
+
         com.kakao.usermgmt.LoginButton buttonLogin = findViewById(R.id.buttonLogin);
         TextView textViewHostName = findViewById(R.id.textViewHostName);
         ObjectVolley objectVolley = ObjectVolley.getInstance(this);

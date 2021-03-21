@@ -20,6 +20,7 @@ import com.mirae.mp3loud.caseclass.Mp3Info;
 import com.mirae.mp3loud.fragment.Fragment02;
 import com.mirae.mp3loud.helper.Util;
 import com.mirae.mp3loud.object.ObjectMp3Player;
+import com.mirae.mp3loud.object.ObjectVolley;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,6 +170,19 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
 
             ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(Util.getActivity(context));
             objectMp3Player.setClicked(true);
+            ObjectVolley.getInstance(context).requestIncrementPlayedTimes(mp3Info.getTitle(), mp3Info.getArtist(),
+                    new ObjectVolley.RequestPlayedTimesListener() {
+                        @Override
+                        public void jobToDo() {
+
+                        }
+                    },
+                    new ObjectVolley.StandardErrorListener() {
+                        @Override
+                        public void jobToDo() {
+
+                        }
+                    });
 
             ActivityMain.viewPager2.setCurrentItem(1);
         }

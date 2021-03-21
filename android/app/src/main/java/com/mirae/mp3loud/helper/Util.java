@@ -53,6 +53,8 @@ public class Util {
     }
 
     public static void editSharedPreferences(Context context, Mp3Info mp3Info, int position) {
+        context.deleteSharedPreferences(context.getString(R.string.shared_preferences_file_key));
+        
         SharedPreferences sharedPref =
                 context.getSharedPreferences(context.getString(R.string.shared_preferences_file_key), context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();

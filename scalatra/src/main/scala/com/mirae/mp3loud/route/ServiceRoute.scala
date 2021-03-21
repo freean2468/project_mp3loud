@@ -89,6 +89,13 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
     delete(db, Like(no, title, artist))
   }
 
+  post("/played_times/:id") {
+    val title = params.getOrElse("title", halt(400))
+    val artist = params.getOrElse("artist", halt(400))
+
+    increasePlayedTimes(db, title, artist)
+  }
+
   /** 굳이 abusing 들에게 친절한 안내메세지를 보내지와 응답을 보내줄 필요는 없지 않을까?
    *  내 쪽에서만 어떤 에러가 있었는지 추적가능하도록 만들자.
    *

@@ -10,6 +10,7 @@
     <string name="url_like_insert">service/like/insert/1?</string>
     <string name="url_like">service/like/1?</string>
     <string name="url_like_delete">service/like/delete/1?</string>
+    <string name="url_played_times_increment">service/played_times/1?</string>
 
     <string name="kakao_app_key">88196a983afb123d50af789d5249b4e0</string>
 
