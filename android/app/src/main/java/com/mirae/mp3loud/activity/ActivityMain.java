@@ -1,26 +1,31 @@
 package com.mirae.mp3loud.activity;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.mirae.mp3loud.R;
-import com.mirae.mp3loud.adapter.AdapterViewPager;
+import com.mirae.mp3loud.fragment.Fragment01;
+import com.mirae.mp3loud.fragment.Fragment02;
 
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class ActivityMain extends AppCompatActivity {
-    private AdapterViewPager fragmentPagerAdapter;
-    DrawerLayout drawerLayout;
-    View drawerView;
-    Button btnClose;
+public class ActivityMain extends FragmentActivity {
+    public static ViewPager2 viewPager2;
+    private Adapter viewPagerAdapter;
+
+    private DrawerLayout drawerLayout;
+    private View drawerView;
+    private Button btnClose;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,13 +73,38 @@ public class ActivityMain extends AppCompatActivity {
             }
         });
 
-        ViewPager viewPager = findViewById(R.id.viewPager);
-        fragmentPagerAdapter = new AdapterViewPager(getSupportFragmentManager());
-        viewPager.setAdapter(fragmentPagerAdapter);
+        viewPager2 = findViewById(R.id.viewPager);
+        viewPagerAdapter = new Adapter(this);
+        viewPager2.setAdapter(viewPagerAdapter);
+    }
+
+    private class Adapter extends FragmentStateAdapter {
+        private Adapter(@NonNull FragmentActivity fa) {
+            super(fa);
+        }
+
+        private final static int FRAGMENT_01 = 0;
+        private final static int FRAGMENT_02 = 1;
+        private final static int FRAGMENT_COUNT = 2;
+
+        @Override
+        public int getItemCount() {
+            return FRAGMENT_COUNT;
+        }
+
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            switch (position) {
+                case FRAGMENT_01: return Fragment01.getInstance();
+                case FRAGMENT_02: return Fragment02.getInstance();
+                default: return null;
+            }
+        }
     }
 
     /**
-     * service 시 주석을 풀면 로그인화면이 아니라 Home 화면으로 나가게 해준다.
+     * 로그인화면이 아니라 Home 화면으로 나가게 해준다.
      *
      * @author 송훈일(freean2468@gmail.com)
      */

@@ -1,5 +1,7 @@
 package com.mirae.mp3loud.adapter;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mirae.mp3loud.R;
+import com.mirae.mp3loud.activity.ActivityMain;
 import com.mirae.mp3loud.caseclass.Mp3Info;
+import com.mirae.mp3loud.fragment.Fragment02;
 import com.mirae.mp3loud.helper.Util;
 
 import java.util.ArrayList;
@@ -19,7 +23,7 @@ import java.util.List;
 
 public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.RecyclableMusicInfoViewHolder> {
     private static final int MAX_LIST_RECORD = 8;
-    private static ArrayList<Mp3Info> playList = new ArrayList<>();
+    private ArrayList<Mp3Info> playList = new ArrayList<>();
     private static AdapterPlayList instance;
 
     private AdapterPlayList() {
@@ -35,7 +39,7 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
         return instance;
     }
 
-    public static ArrayList<Mp3Info> getPlayList() { return playList; }
+    public ArrayList<Mp3Info> getPlayList() { return playList; }
 
     @NonNull
     @Override
@@ -140,11 +144,22 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
         @Override
         public void onClick(View view) {
 //            Log.d("debug", "clicked : " + getAdapterPosition());
-//            view.setBackgroundColor(Color.CYAN);
-//            TextView textViewAnswer = view.findViewById(R.id.textViewAnswer);
-//            textViewAnswer.setText("clicked!");
-//            ImageView imageViewPhoto = view.findViewById(R.id.imageViewPhoto);
-//            imageViewPhoto.setImageResource(R.mipmap.ic_launcher_round);
+            Mp3Info mp3Info = playList.get(getAdapterPosition());
+            Context context = view.getContext();
+            SharedPreferences sharedPref =
+                    context.getSharedPreferences(context.getString(R.string.shared_preferences_file_key), context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.clear();
+            editor.putString(context.getString(R.string.shared_preferences_title_key), mp3Info.getTitle());
+            editor.putString(context.getString(R.string.shared_preferences_artist_key), mp3Info.getArtist());
+            editor.putString(context.getString(R.string.shared_preferences_genre_key), mp3Info.getGenre());
+//            editor.putString("like", mp3Info.get());
+            editor.putInt(context.getString(R.string.shared_preferences_played_times_key), mp3Info.getPlayedTimes());
+            editor.putInt(context.getString(R.string.shared_preferences_position_key), getAdapterPosition());
+            editor.putString(context.getString(R.string.shared_preferences_image_key), mp3Info.getImage());
+            editor.commit();
+            ActivityMain.viewPager2.setCurrentItem(1);
+//            Fragment02.getInstance().setPlayer(playList.get(getAdapterPosition()), getAdapterPosition());
         }
 
         public ImageView getImageViewAlbumCover() { return imageViewAlbumCover; }

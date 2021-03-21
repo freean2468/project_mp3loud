@@ -25,7 +25,6 @@ import java.io.IOException;
 
 public class Fragment01 extends Fragment {
     private RecyclerView recyclerView;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
 
     private static Fragment01 instance = null;
 
@@ -55,7 +54,7 @@ public class Fragment01 extends Fragment {
                 new ObjectVolley.RequestMp3ListListener() {
                     @Override
                     public void jobToDo() {
-//                        playMp3(Util.convertBase64StringToByteArray(this.getOrigin()));
+
                     }
                 },
                 new ObjectVolley.StandardErrorListener() {
@@ -67,36 +66,5 @@ public class Fragment01 extends Fragment {
         );
 
         return view;
-    }
-
-    private void playMp3(Context context, byte[] mp3SoundByteArray) {
-        try {
-            // create temp file that will hold byte array
-            File tempMp3 = File.createTempFile("kurchina", "mp3", context.getCacheDir());
-            tempMp3.deleteOnExit();
-            FileOutputStream fos = new FileOutputStream(tempMp3);
-            fos.write(mp3SoundByteArray);
-            fos.close();
-
-            // resetting mediaplayer instance to evade problems
-            mediaPlayer.reset();
-
-            // In case you run into issues with threading consider new instance like:
-            // MediaPlayer mediaPlayer = new MediaPlayer();
-
-            // Tried passing path directly, but kept getting
-            // "Prepare failed.: status=0x1"
-            // so using file descriptor instead
-            FileInputStream fis = new FileInputStream(tempMp3);
-            mediaPlayer.setDataSource(fis.getFD());
-
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-
-            Log.d("debug", "mediaPlayer started!");
-        } catch (IOException ex) {
-            String s = ex.toString();
-            ex.printStackTrace();
-        }
     }
 }
