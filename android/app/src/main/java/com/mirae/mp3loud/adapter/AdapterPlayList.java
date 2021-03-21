@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -84,17 +85,25 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
      */
     @Override
     public void onBindViewHolder(@NonNull RecyclableMusicInfoViewHolder holder, int position) {
-        holder.getTextViewArtist().setText(playList.get(position).getArtist());
-        holder.getTextViewGenre().setText(playList.get(position).getGenre());
-        holder.getTextViewTitle().setText(playList.get(position).getTitle());
-        holder.getTextViewPlayedTimes().setText(String.valueOf(playList.get(position).getPlayedTimes()));
+        Mp3Info mp3Info = playList.get(position);
 
-        String albumCover = playList.get(position).getImage();
+        if (mp3Info.getState() == Mp3Info.NOT_TAKEN_YET) {
+            holder.getLinearLayoutMp3Info().setVisibility(View.GONE);
+        } else {
+            holder.getLinearLayoutMp3Info().setVisibility(View.VISIBLE);
 
-        if (albumCover != null && albumCover.length() > 0){
-            byte[] albumCoverBytes = Util.convertBase64StringToByteArray(albumCover);
-            Bitmap albumCoverBitmap = Util.convertByteArrayToBitmap(albumCoverBytes);
-            holder.getImageViewAlbumCover().setImageBitmap(albumCoverBitmap);
+            holder.getTextViewArtist().setText(mp3Info.getArtist());
+            holder.getTextViewGenre().setText(mp3Info.getGenre());
+            holder.getTextViewTitle().setText(mp3Info.getTitle());
+            holder.getTextViewPlayedTimes().setText(String.valueOf(mp3Info.getPlayedTimes()));
+
+            String albumCover = mp3Info.getImage();
+
+            if (albumCover != null && albumCover.length() > 0){
+                byte[] albumCoverBytes = Util.convertBase64StringToByteArray(albumCover);
+                Bitmap albumCoverBitmap = Util.convertByteArrayToBitmap(albumCoverBytes);
+                holder.getImageViewAlbumCover().setImageBitmap(albumCoverBitmap);
+            }
         }
     }
 
@@ -129,6 +138,7 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
         private TextView textViewGenre;
         private ImageView imageViewLike;
         private TextView textViewPlayedTimes;
+        private LinearLayout linearLayoutMp3Info;
 
         public RecyclableMusicInfoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -138,6 +148,7 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
             textViewGenre = itemView.findViewById(R.id.textViewGenre);
             imageViewLike = itemView.findViewById(R.id.imageViewLike);
             textViewPlayedTimes = itemView.findViewById(R.id.textViewPlayedTimes);
+            linearLayoutMp3Info = itemView.findViewById(R.id.linearLayoutMp3Info);
 
             itemView.setOnClickListener(this);
         }//end of CalendarViewHolder
@@ -172,5 +183,6 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
         public TextView getTextViewArtist() { return textViewArtist; }
         public TextView getTextViewGenre() { return textViewGenre; }
         public TextView getTextViewPlayedTimes() { return textViewPlayedTimes; }
+        public LinearLayout getLinearLayoutMp3Info() { return linearLayoutMp3Info; }
     }//end of class
 }
