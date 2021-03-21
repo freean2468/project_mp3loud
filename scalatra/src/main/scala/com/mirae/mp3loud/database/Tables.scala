@@ -41,6 +41,13 @@ object Tables {
    */
   case class Like(no: String, title: String, artist: String)
 
+  /** no는 뺀 응답용 case class
+   *
+   * @param title
+   * @param artist
+   */
+  case class LikeConverted(title: String, artist: String)
+
   /** db의 user_table을 모방한 클래스
    *
    * @param tag 테이블 이름

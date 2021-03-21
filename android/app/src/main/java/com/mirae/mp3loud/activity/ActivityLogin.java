@@ -61,7 +61,7 @@ public class ActivityLogin extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(MeV2Response result) {
-                    Log.i("KAKAO_API", "사용자 아이디: " + result.getId());
+                    Log.i("debug", "사용자 아이디: " + result.getId());
 
                     /**
                      * 성공했으니 회원번호를 가지고 다음 Activity인 ActivityQA로 이동

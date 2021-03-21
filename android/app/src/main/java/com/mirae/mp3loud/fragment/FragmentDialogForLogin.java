@@ -51,6 +51,7 @@ public class FragmentDialogForLogin extends DialogFragment {
                         textViewProgress.setText(getString(R.string.login_ok));
                         textViewProgress.setVisibility(View.VISIBLE);
                         Intent intent = new Intent(getContext(), ActivityMain.class);
+                        Log.i("debug", "in kakaoLogin no : " + no);
                         intent.putExtra("no", no);
                         startActivity(intent);
                     }

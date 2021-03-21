@@ -14,13 +14,13 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 public class ObjectMp3Player {
     private static ObjectMp3Player objectMp3Player = new ObjectMp3Player();
     private static Activity activity;
 
     private MediaPlayer mediaPlayer;
+    private boolean clicked;
     private FileDescriptor fileDescriptor;
     private Thread threadUi;
 
@@ -33,7 +33,9 @@ public class ObjectMp3Player {
         mediaPlayer.setOnCompletionListener(mp -> {
             initUI();
         });
+        clicked = false;
     }
+
     public static ObjectMp3Player getInstance(Activity a) {
         activity = a;
         return objectMp3Player;
@@ -111,7 +113,6 @@ public class ObjectMp3Player {
             }
             else
                 textViewRemainedPosition.setText(Util.secondsTommssFormat(mediaPlayer.getDuration()));
-
         }
     }
 
@@ -126,4 +127,12 @@ public class ObjectMp3Player {
     }
 
     public MediaPlayer getMediaPlayer() { return mediaPlayer; }
+
+    public boolean isClicked() {
+        return clicked;
+    }
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
+    }
 }

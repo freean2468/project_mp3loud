@@ -20,11 +20,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.mirae.mp3loud.R;
+import com.mirae.mp3loud.activity.ActivityMain;
 import com.mirae.mp3loud.adapter.AdapterPlayList;
 import com.mirae.mp3loud.caseclass.Mp3Info;
 import com.mirae.mp3loud.helper.Util;
 import com.mirae.mp3loud.object.ObjectMp3Player;
 import com.mirae.mp3loud.object.ObjectVolley;
+
+import java.util.ArrayList;
 
 public class Fragment02 extends Fragment {
     private static Fragment02 instance = null;
@@ -43,6 +46,8 @@ public class Fragment02 extends Fragment {
     private SeekBar seekBarVolume;
     private TextView textViewCurrentPosition;
     private TextView textViewRemainedPosition;
+
+    private boolean toggleLike;
 
     private Fragment02() {
 
@@ -75,24 +80,24 @@ public class Fragment02 extends Fragment {
         textViewCurrentPosition = view.findViewById(R.id.textViewCurrentPosition);
         textViewRemainedPosition = view.findViewById(R.id.textViewRemainedPosition);
 
-        return view;
-    }
+        SharedPreferences sharedPref = getContext().getSharedPreferences(
+                getContext().getString(R.string.shared_preferences_file_key), getContext().MODE_PRIVATE);
 
-    @Override
-    public void onResume() {
-        super.onResume();
+        if (sharedPref == null) {
+            Util.editSharedPreferences(getContext(), AdapterPlayList.getInstance().getPlayList().get(0), 0);
+        }
 
-        ObjectMp3Player.getInstance(getActivity()).pause();
+        ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
 
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.shared_preferences_file_key), Context.MODE_PRIVATE);
         int playedTimes = sharedPref.getInt(getString(R.string.shared_preferences_played_times_key), 0);
         int position = sharedPref.getInt(getString(R.string.shared_preferences_position_key), 0);
         String title = sharedPref.getString(getString(R.string.shared_preferences_title_key), "no title");
         String artist = sharedPref.getString(getString(R.string.shared_preferences_artist_key), "no artist");
         String genre = sharedPref.getString(getString(R.string.shared_preferences_genre_key), "no genre");
         String image = sharedPref.getString(getString(R.string.shared_preferences_image_key), "no image");
+        Boolean like = sharedPref.getBoolean(getString(R.string.shared_preferences_like_key), false);
 
-        setPlayer(new Mp3Info(Mp3Info.NOT_TAKEN_YET, genre, title, artist, image, playedTimes), position);
+        setPlayer(new Mp3Info(Mp3Info.NOT_TAKEN_YET, genre, title, artist, image, like, playedTimes), position);
 
         ObjectVolley objectVolley = ObjectVolley.getInstance(getContext());
         objectVolley.requestMp3(title, artist, new ObjectVolley.RequestMp3Listener() {
@@ -101,7 +106,9 @@ public class Fragment02 extends Fragment {
                 ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
                 objectMp3Player.init(getContext(), Util.convertBase64StringToByteArray(this.getMp3()));
                 objectMp3Player.setUI(seekBarPlay, textViewCurrentPosition, textViewRemainedPosition);
-                objectMp3Player.play();
+                if (objectMp3Player.isClicked() == true) {
+                    objectMp3Player.play();
+                }
             }
         }, new ObjectVolley.StandardErrorListener() {
             @Override
@@ -109,6 +116,48 @@ public class Fragment02 extends Fragment {
 
             }
         });
+
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+        if (objectMp3Player.isClicked() == true) {
+            objectMp3Player.pause();
+
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.shared_preferences_file_key), Context.MODE_PRIVATE);
+            int playedTimes = sharedPref.getInt(getString(R.string.shared_preferences_played_times_key), 0);
+            int position = sharedPref.getInt(getString(R.string.shared_preferences_position_key), 0);
+            String title = sharedPref.getString(getString(R.string.shared_preferences_title_key), "no title");
+            String artist = sharedPref.getString(getString(R.string.shared_preferences_artist_key), "no artist");
+            String genre = sharedPref.getString(getString(R.string.shared_preferences_genre_key), "no genre");
+            String image = sharedPref.getString(getString(R.string.shared_preferences_image_key), "no image");
+            String no = ((ActivityMain) getActivity()).getNo();
+            Boolean like = sharedPref.getBoolean(getString(R.string.shared_preferences_like_key), false);
+
+            setPlayer(new Mp3Info(Mp3Info.NOT_TAKEN_YET, genre, title, artist, image, like, playedTimes), position);
+
+            ObjectVolley objectVolley = ObjectVolley.getInstance(getContext());
+            objectVolley.requestMp3(title, artist, new ObjectVolley.RequestMp3Listener() {
+                @Override
+                public void jobToDo() {
+                    ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+                    objectMp3Player.init(getContext(), Util.convertBase64StringToByteArray(this.getMp3()));
+                    objectMp3Player.setUI(seekBarPlay, textViewCurrentPosition, textViewRemainedPosition);
+                    objectMp3Player.play();
+                }
+            }, new ObjectVolley.StandardErrorListener() {
+                @Override
+                public void jobToDo() {
+
+                }
+            });
+        }
+
+        objectMp3Player.setClicked(false);
     }
 
     private void setPlayer(Mp3Info mp3Info, int position) {
@@ -150,8 +199,65 @@ public class Fragment02 extends Fragment {
             }
         });
 
+        if (mp3Info.isLike() == true) {
+            imageButtonLike.setImageResource(R.drawable.like_enabled);
+        } else {
+            imageButtonLike.setImageResource(R.drawable.like_disabled);
+        }
         imageButtonLike.setOnClickListener(v -> {
+            ObjectVolley objectVolley = ObjectVolley.getInstance(getContext());
+            if (mp3Info.isLike() == true) {
+                imageButtonLike.setImageResource(R.drawable.like_disabled);
+                mp3Info.setLike(!mp3Info.isLike());
+                objectVolley.requestDeleteLike(((ActivityMain) getActivity()).getNo(), textViewTitle.getText().toString(), textViewArtist.getText().toString(),
+                        new ObjectVolley.RequestDeleteLikeListener() {
+                            @Override
+                            public void jobToDo() {
 
+                            }
+                        },
+                        new ObjectVolley.StandardErrorListener() {
+                            @Override
+                            public void jobToDo() {
+
+                            }
+                        });
+                ArrayList<Mp3Info> playList = AdapterPlayList.getInstance().getPlayList();
+                for (int i = 0; i < playList.size(); i++) {
+                    Mp3Info mp3 = playList.get(i);
+                    if (mp3.getTitle().equals(mp3Info.getTitle()) && mp3.getArtist().equals(mp3Info.getArtist())) {
+                        mp3.setLike(mp3Info.isLike());
+                        AdapterPlayList.getInstance().notifyItemChanged(i);
+                        break;
+                    }
+                }
+            } else {
+                imageButtonLike.setImageResource(R.drawable.like_enabled);
+                mp3Info.setLike(!mp3Info.isLike());
+
+                objectVolley.requestInsertLike(((ActivityMain) getActivity()).getNo(), textViewTitle.getText().toString(), textViewArtist.getText().toString(),
+                        new ObjectVolley.RequestInsertLikeListener() {
+                            @Override
+                            public void jobToDo() {
+
+                            }
+                        },
+                        new ObjectVolley.StandardErrorListener() {
+                            @Override
+                            public void jobToDo() {
+
+                            }
+                        });
+                ArrayList<Mp3Info> playList = AdapterPlayList.getInstance().getPlayList();
+                for (int i = 0; i < playList.size(); i++) {
+                    Mp3Info mp3 = playList.get(i);
+                    if (mp3.getTitle().equals(mp3Info.getTitle()) && mp3.getArtist().equals(mp3Info.getArtist())) {
+                        mp3.setLike(mp3Info.isLike());
+                        AdapterPlayList.getInstance().notifyItemChanged(i);
+                        break;
+                    }
+                }
+            }
         });
 
         imageButtonToStart.setOnClickListener(v -> {

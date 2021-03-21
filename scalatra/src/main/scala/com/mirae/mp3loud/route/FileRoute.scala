@@ -1,7 +1,7 @@
 package com.mirae.mp3loud.route
 
 import com.mirae.mp3loud.database.QuerySupport
-import com.mirae.mp3loud.database.Tables.Mp3
+import com.mirae.mp3loud.database.Tables.{Like, Mp3}
 import org.json4s.{DefaultFormats, Formats}
 import org.postgresql.util.PSQLException
 import org.scalatra.json.JacksonJsonSupport
@@ -29,39 +29,9 @@ trait FileRoute extends ScalatraBase with JacksonJsonSupport with FutureSupport 
   /** get
    *
    */
-  get("/login/:id") {
-    new AsyncResult { override val is =
-      Future {
-        contentType = formats("json")
 
-        val logger = LoggerFactory.getLogger(getClass)
-        logger.debug("in service/login!")
-        /**
-         * dayOfYear가 서버와 다르면 차단하는 로직이 필요할까?
-         * 고민해보자.
-         */
-        login(db, params.getOrElse("no", halt(400)))
-      }
-    }
-  }
 
-  get("/mp3/:id") {
-    new AsyncResult() { override val is =
-      Future {
-        contentType = formats("json")
-        retrieveMp3(db, params.getOrElse("title", halt(400)), params.getOrElse("artist", halt(400)))
-      }
-    }
-  }
 
-  get("/mp3List") {
-    new AsyncResult() { override val is =
-      Future {
-        contentType = formats("json")
-        retrieveMp3List(db)
-      }
-    }
-  }
 
   /** post
    *

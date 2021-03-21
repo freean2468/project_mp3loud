@@ -1,5 +1,6 @@
 package com.mirae.mp3loud.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -97,6 +98,12 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
             holder.getTextViewTitle().setText(mp3Info.getTitle());
             holder.getTextViewPlayedTimes().setText(String.valueOf(mp3Info.getPlayedTimes()));
 
+            if (mp3Info.isLike() == true) {
+                holder.getImageViewLike().setImageResource(R.drawable.like_enabled);
+            } else {
+                holder.getImageViewLike().setImageResource(R.drawable.like_disabled);
+            }
+
             String albumCover = mp3Info.getImage();
 
             if (albumCover != null && albumCover.length() > 0){
@@ -157,22 +164,12 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
         public void onClick(View view) {
             Mp3Info mp3Info = playList.get(getAdapterPosition());
             Context context = view.getContext();
-            SharedPreferences sharedPref =
-                    context.getSharedPreferences(context.getString(R.string.shared_preferences_file_key), context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.clear();
-            editor.putString(context.getString(R.string.shared_preferences_title_key), mp3Info.getTitle());
-            editor.putString(context.getString(R.string.shared_preferences_artist_key), mp3Info.getArtist());
-            editor.putString(context.getString(R.string.shared_preferences_genre_key), mp3Info.getGenre());
-//            editor.putString("like", mp3Info.get());
-            editor.putInt(context.getString(R.string.shared_preferences_played_times_key), mp3Info.getPlayedTimes());
-            editor.putInt(context.getString(R.string.shared_preferences_position_key), getAdapterPosition());
-            editor.putString(context.getString(R.string.shared_preferences_image_key), mp3Info.getImage());
 
-            /**
-             * synchronous
-             */
-            editor.commit();
+            Util.editSharedPreferences(context, mp3Info, getAdapterPosition());
+
+            ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(Util.getActivity(context));
+            objectMp3Player.setClicked(true);
+
             ActivityMain.viewPager2.setCurrentItem(1);
         }
 

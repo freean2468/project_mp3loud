@@ -23,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import static com.mirae.mp3loud.caseclass.Mp3Info.TAKEN;
 
 /**
@@ -135,11 +137,6 @@ public class ObjectVolley {
      * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
      */
     abstract public static class RequestLoginListener implements Response.Listener<JSONObject> {
-        protected String no;
-        protected int dayOfYear;
-        protected String answer;
-        protected byte[] photo = new byte[]{};
-
         @Override
         public void onResponse(JSONObject response) {
             jobToDo();
@@ -203,7 +200,7 @@ public class ObjectVolley {
                         throw new AssertionError("image shouldn't be null!");
                     }
 
-                    AdapterPlayList.getInstance().addMp3(new Mp3Info(TAKEN, genre, title, artist, image, playedTimes));
+                    AdapterPlayList.getInstance().addMp3(new Mp3Info(TAKEN, genre, title, artist, image, false, playedTimes));
                     Log.d(ctx.getString(R.string.tag_server), "base64 string image length : " + image.length());
                 }
             } catch (JSONException je) {
@@ -240,7 +237,6 @@ public class ObjectVolley {
         public void onResponse(JSONObject response) {
             try {
                 mp3 = response.get("mp3").toString();
-                Log.d("debug", mp3.toString());
 
                 if (mp3 == null) {
                     Log.d("debug", "mp3 shouldn't be null!");
@@ -259,6 +255,105 @@ public class ObjectVolley {
         public String getMp3() {
             return mp3;
         }
+    }
+
+
+
+
+
+    public void requestLike(String no,  RequestLikeListener listener, StandardErrorListener errorListener) {
+        String url = hostName + ctx.getString(R.string.url_like) + "no=" + no;
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
+        addToRequestQueue(request);
+    }
+
+    /**
+     * RequstLike 요청에 대한 응답 wrapper abstract class
+     * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
+     */
+    abstract public static class RequestLikeListener implements Response.Listener<JSONArray> {
+        @Override
+        public void onResponse(JSONArray response) {
+            try {
+                for (int i = 0; i < response.length(); ++i) {
+                    JSONObject like = response.getJSONObject(i);
+
+                    if (like == null) {
+                        Log.d("debug", "origin shouldn't be null!");
+                        throw new AssertionError("origin shouldn't be null!");
+                    }
+
+                    String title = like.get("title").toString();
+                    String artist = like.get("artist").toString();
+
+                    if (title == null) {
+                        Log.d("debug", "title shouldn't be null!");
+                        throw new AssertionError("title shouldn't be null!");
+                    }
+
+                    if (artist == null) {
+                        Log.d("debug", "artist shouldn't be null!");
+                        throw new AssertionError("artist shouldn't be null!");
+                    }
+
+                    ArrayList<Mp3Info> playList =  AdapterPlayList.getInstance().getPlayList();
+                    for (int j = 0; j < playList.size(); ++j) {
+                        Mp3Info mp3Info = playList.get(j);
+                        if (mp3Info.getTitle().equals(title) && mp3Info.getArtist().equals(artist)) {
+                            mp3Info.setLike(true);
+                            AdapterPlayList.getInstance().notifyItemChanged(j);
+                            break;
+                        }
+                    }
+                }
+            } catch (JSONException je) {
+                je.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            jobToDo();
+        }
+
+        public abstract void jobToDo();
+    }
+
+    public void requestInsertLike(String no, String title, String artist, RequestInsertLikeListener listener, StandardErrorListener errorListener) {
+        String url = hostName + ctx.getString(R.string.url_like_insert) + "no=" + no + "&title=" + title + "&artist=" + artist;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
+        addToRequestQueue(request);
+    }
+
+    /**
+     * RequstLike 요청에 대한 응답 wrapper abstract class
+     * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
+     */
+    abstract public static class RequestInsertLikeListener implements Response.Listener<JSONObject> {
+        @Override
+        public void onResponse(JSONObject response) {
+            jobToDo();
+        }
+
+        public abstract void jobToDo();
+    }
+
+    public void requestDeleteLike(String no, String title, String artist, RequestDeleteLikeListener listener, StandardErrorListener errorListener) {
+        String url = hostName + ctx.getString(R.string.url_like_delete) + "no=" + no + "&title=" + title + "&artist=" + artist;
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
+        addToRequestQueue(request);
+    }
+
+    /**
+     * RequstLike 요청에 대한 응답 wrapper abstract class
+     * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
+     */
+    abstract public static class RequestDeleteLikeListener implements Response.Listener<JSONObject> {
+        @Override
+        public void onResponse(JSONObject response) {
+            jobToDo();
+        }
+
+        public abstract void jobToDo();
     }
 
 

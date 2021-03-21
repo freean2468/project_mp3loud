@@ -1,6 +1,7 @@
 package com.mirae.mp3loud.route
 
 import com.mirae.mp3loud.database.QuerySupport
+import com.mirae.mp3loud.database.Tables.Like
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json.JacksonJsonSupport
 import org.scalatra.servlet.{FileUploadSupport, MultipartConfig}
@@ -40,6 +41,52 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
         login(db, params.getOrElse("no", halt(400)))
       }
     }
+  }
+
+  get("/mp3List") {
+    new AsyncResult() { override val is =
+      Future {
+        contentType = formats("json")
+        retrieveMp3List(db)
+      }
+    }
+  }
+
+  get("/mp3/:id") {
+    new AsyncResult() { override val is =
+      Future {
+        contentType = formats("json")
+        retrieveMp3(db, params.getOrElse("title", halt(400)), params.getOrElse("artist", halt(400)))
+      }
+    }
+  }
+
+  get("/like/:id") {
+    new AsyncResult() { override val is =
+      Future {
+        contentType = formats("json")
+        retrieveLikeList(db, params.getOrElse("no", halt(400)))
+      }
+    }
+  }
+
+  /** post
+   *
+   */
+  post("/like/insert/:id") {
+    val no = params.getOrElse("no", halt(400))
+    val title = params.getOrElse("title", halt(400))
+    val artist = params.getOrElse("artist", halt(400))
+
+    insertLike(db, no, title, artist)
+  }
+
+  post("/like/delete/:id") {
+    val no = params.getOrElse("no", halt(400))
+    val title = params.getOrElse("title", halt(400))
+    val artist = params.getOrElse("artist", halt(400))
+
+    delete(db, Like(no, title, artist))
   }
 
   /** 굳이 abusing 들에게 친절한 안내메세지를 보내지와 응답을 보내줄 필요는 없지 않을까?

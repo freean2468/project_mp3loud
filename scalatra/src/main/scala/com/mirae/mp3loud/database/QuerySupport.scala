@@ -1,16 +1,14 @@
 package com.mirae.mp3loud.database
 
-import com.mirae.mp3loud.database.Tables.{Mp3, Mp3Converted, Mp3s, User, mp3s, users}
+import com.mirae.mp3loud.database.Tables.{Like, LikeConverted, Mp3, Mp3Converted, Mp3s, User, likes, mp3s, users}
 import com.mirae.mp3loud.helper.Util
 import org.scalatra.servlet.FileItem
 import org.scalatra.{ActionResult, NotFound, Ok}
 import org.slf4j.LoggerFactory
-import slick.dbio.DBIO
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.Promise
-import scala.reflect.io.File
 import scala.util.{Failure, Success, Try}
 
 
@@ -26,19 +24,22 @@ trait QuerySupport {
    */
   def insert(db: Database, user: User) = db.run(users += user)
   def insert(db: Database, mp3: Mp3) = db.run(mp3s += mp3)
+  def insert(db: Database, like: Like) = db.run(likes += like)
 
   def insertMp3(db: Database, mp3: FileItem, image: FileItem, genre: String, title: String, artist: String, playLengthInSec: Int) = {
-    val logger = LoggerFactory.getLogger(getClass)
     val prom = Promise[ActionResult]()
-//    logger.info(s"file.get().length : ${file.get().length}")
     insert(db, Mp3(genre, title, artist, 0, mp3.get(), image.get())) onComplete {
-      case Failure(e) => {
-        prom.failure(e)
-      }
-      case Success(s) => {
-//        logger.debug(s"s : ${s}")
-        prom.complete(Try(Ok(s"${s} : i-ed")))
-      }
+      case Failure(e) => prom.failure(e)
+      case Success(s) => prom.complete(Try(Ok(s)))
+    }
+    prom.future
+  }
+
+  def insertLike(db: Database, no: String, title: String, artist: String) = {
+    val prom = Promise[ActionResult]()
+    insert(db, Like(no, title, artist)) onComplete {
+      case Failure(e) => prom.failure(e)
+      case Success(s) => prom.complete(Try(Ok(s)))
     }
     prom.future
   }
@@ -58,8 +59,10 @@ trait QuerySupport {
   def findMp3(db: Database, title: String, artist: String) =
     db.run(mp3s.filter(_.title === title).filter(_.artist === artist).result.headOption)
 
+  def findLikes(db: Database, no: String) =
+    db.run(likes.filter(d => d.no === no).result)
+
   def retrieveMp3(db: Database, title: String, artist: String) = {
-    val logger = LoggerFactory.getLogger(getClass)
     val prom = Promise[ActionResult]()
 
     findMp3(db, title, artist) onComplete {
@@ -90,7 +93,7 @@ trait QuerySupport {
         val convertedArray =
           for (m <- mp3)
             yield(Mp3Converted(m.genre, m.title, m.artist, m.playedTimes, Util.convertBytesArrayToBase64String(m.image)))
-        convertedArray map (elem => logger.info(s"image.length : ${elem.image.length}"))
+//        convertedArray map (elem => logger.info(s"image.length : ${elem.image.length}"))
 
         prom.complete(Try(Ok(convertedArray)))
       }
@@ -98,9 +101,22 @@ trait QuerySupport {
     prom.future
   }
 
-//  def findLikes(db: Database, no: String) =
-//    db.run(diaries.filter(d =>
-//      d.no === no && (d.dayOfYear >= firstDay && d.dayOfYear <= lastDay)).result)
+  def retrieveLikeList(db: Database, no: String) = {
+    val prom = Promise[ActionResult]()
+    findLikes(db, no) onComplete {
+      case Failure(e) => {
+        prom.failure(e)
+        e.printStackTrace()
+      }
+      case Success(like) => {
+        val convertedArray =
+          for (v <- like)
+            yield(LikeConverted(v.title, v.artist))
+        prom.complete(Try(Ok(convertedArray)))
+      }
+    }
+    prom.future
+  }
 
   /** 유저가 로그인 시 호출하는 함수. 회원 번호를 받아 user_table에 계정이 없으면 새로 생성한다.
    *
@@ -158,8 +174,7 @@ trait QuerySupport {
   /** Delete
    *
    */
-//  def delete(db: Database): Unit = {
-//    val deleteAction = (accounts filter { _.no like "%test%" }).delete
-//    db.run(deleteAction)
-//  }
+  def delete(db: Database, like:Like): Unit = {
+    db.run((likes filter { l => l.title === l.artist && l.artist === like.artist }).delete)
+  }
 }
