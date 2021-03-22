@@ -100,6 +100,11 @@ object Tables {
     def title = column[String]("title")
     def artist = column[String]("artist")
 
+    /** primary key
+     *
+     */
+    def pkNoTitleArtist = primaryKey("pk_no_title_artist", (no, title, artist))
+
     /** foreign key */
     def user =
       foreignKey("fk_no", no, users)(_.no,

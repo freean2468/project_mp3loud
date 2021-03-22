@@ -47,11 +47,12 @@ public class Fragment01 extends Fragment {
                 new ObjectVolley.RequestMp3ListListener() {
                     @Override
                     public void jobToDo() {
-                        objectVolley.requestLike(((ActivityMain) getActivity()).getNo(),
-                                new ObjectVolley.RequestLikeListener() {
+                        objectVolley.requestLikeList(((ActivityMain) getActivity()).getNo(),
+                                new ObjectVolley.requestLikeListListener() {
                                     @Override
                                     public void jobToDo() {
-
+                                        FragmentDialogForMp3 fragmentDialogForMp3 = new FragmentDialogForMp3(AdapterPlayList.getInstance().getPlayList().get(0), 0);
+                                        fragmentDialogForMp3.show(getFragmentManager(), "mp3");
                                     }
                                 },
                                 new ObjectVolley.StandardErrorListener() {

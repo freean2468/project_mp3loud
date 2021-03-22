@@ -65,6 +65,17 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
     new AsyncResult() { override val is =
       Future {
         contentType = formats("json")
+        retrieveLike(db, params.getOrElse("no", halt(400)),
+          params.getOrElse("title", halt(400)),
+          params.getOrElse("artist", halt(400)))
+      }
+    }
+  }
+
+  get("/like_list/:id") {
+    new AsyncResult() { override val is =
+      Future {
+        contentType = formats("json")
         retrieveLikeList(db, params.getOrElse("no", halt(400)))
       }
     }
@@ -73,20 +84,17 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
   /** post
    *
    */
-  post("/like/insert/:id") {
+  post("/like/toggle/:id") {
     val no = params.getOrElse("no", halt(400))
     val title = params.getOrElse("title", halt(400))
     val artist = params.getOrElse("artist", halt(400))
 
-    insertLike(db, no, title, artist)
-  }
-
-  post("/like/delete/:id") {
-    val no = params.getOrElse("no", halt(400))
-    val title = params.getOrElse("title", halt(400))
-    val artist = params.getOrElse("artist", halt(400))
-
-    delete(db, Like(no, title, artist))
+    new AsyncResult() { override val is =
+      Future {
+        contentType = formats("json")
+        toggleLike(db, no, title, artist)
+      }
+    }
   }
 
   post("/played_times/:id") {

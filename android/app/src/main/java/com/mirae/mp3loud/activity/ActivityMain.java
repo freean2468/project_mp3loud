@@ -13,8 +13,14 @@ import android.util.Log;
 import com.mirae.mp3loud.R;
 import com.mirae.mp3loud.fragment.Fragment01;
 import com.mirae.mp3loud.fragment.Fragment02;
+import com.mirae.mp3loud.fragment.FragmentDialogForLogin;
+import com.mirae.mp3loud.fragment.FragmentDialogForMp3;
 
 public class ActivityMain extends FragmentActivity {
+    public final static int FRAGMENT_01 = 0;
+    public final static int FRAGMENT_02 = 1;
+    public final static int FRAGMENT_COUNT = 2;
+
     public static ViewPager2 viewPager2;
     private Adapter viewPagerAdapter;
     private String no;
@@ -42,10 +48,6 @@ public class ActivityMain extends FragmentActivity {
         private Adapter(@NonNull FragmentActivity fa) {
             super(fa);
         }
-
-        private final static int FRAGMENT_01 = 0;
-        private final static int FRAGMENT_02 = 1;
-        private final static int FRAGMENT_COUNT = 2;
 
         @Override
         public int getItemCount() {

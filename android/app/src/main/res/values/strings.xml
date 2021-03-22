@@ -1,15 +1,15 @@
 <resources>
     <string name="app_name">Mp3loud</string>
 
-    <string name="host_name_for_service"></string>
+    <string name="host_name_for_service">Mp3loud-env.eba-q2bkrv94.ap-northeast-2.elasticbeanstalk.com</string>
     <string name="host_name_for_development">http://10.0.2.2:8080/</string>
 
     <string name="url_login">service/login/1?</string>
     <string name="url_mp3">service/mp3/1?</string>
     <string name="url_mp3_list">service/mp3List</string>
-    <string name="url_like_insert">service/like/insert/1?</string>
+    <string name="url_like_toggle">service/like/toggle/1?</string>
     <string name="url_like">service/like/1?</string>
-    <string name="url_like_delete">service/like/delete/1?</string>
+    <string name="url_like_list">service/like_list/1?</string>
     <string name="url_played_times_increment">service/played_times/1?</string>
 
     <string name="kakao_app_key">88196a983afb123d50af789d5249b4e0</string>

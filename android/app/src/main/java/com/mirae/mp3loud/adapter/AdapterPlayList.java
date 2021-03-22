@@ -1,8 +1,6 @@
 package com.mirae.mp3loud.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +10,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mirae.mp3loud.R;
 import com.mirae.mp3loud.activity.ActivityMain;
 import com.mirae.mp3loud.caseclass.Mp3Info;
-import com.mirae.mp3loud.fragment.Fragment02;
+import com.mirae.mp3loud.fragment.FragmentDialogForMp3;
 import com.mirae.mp3loud.helper.Util;
 import com.mirae.mp3loud.object.ObjectMp3Player;
 import com.mirae.mp3loud.object.ObjectVolley;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mirae.mp3loud.activity.ActivityMain.FRAGMENT_02;
 
 public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.RecyclableMusicInfoViewHolder> {
     private static final int MAX_LIST_RECORD = 8;
@@ -184,7 +185,10 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
                         }
                     });
 
-            ActivityMain.viewPager2.setCurrentItem(1);
+            FragmentDialogForMp3 fragmentDialogForMp3 = new FragmentDialogForMp3(mp3Info, getAdapterPosition());
+            fragmentDialogForMp3.show(((FragmentActivity)context).getSupportFragmentManager(), "mp3");
+
+            ActivityMain.viewPager2.setCurrentItem(FRAGMENT_02);
         }
 
         public ImageView getImageViewAlbumCover() { return imageViewAlbumCover; }

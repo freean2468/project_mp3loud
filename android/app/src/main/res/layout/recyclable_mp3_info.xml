@@ -3,14 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/linearLayoutMp3Info"
     android:layout_width="match_parent"
-    android:layout_height="90dp"
-    android:background="@color/white"
-    android:orientation="horizontal">
+    android:layout_height="50dp"
+    android:orientation="horizontal"
+    android:layout_margin="10dp"
+    android:background="@drawable/background_for_button">
     <ImageView
         android:id="@+id/imageViewAlbumCover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4"/>
+        android:layout_weight="4"
+        android:padding="5dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +26,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="title"
-            android:gravity="center_vertical"/>
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            android:textSize="12dp"/>
         <TextView
             android:id="@+id/textViewArtist"
             android:layout_width="match_parent"
@@ -32,7 +36,9 @@
             android:layout_weight="1"
             android:text="artist"
             android:gravity="center_vertical"
-            android:layout_marginLeft="3dp"/>
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/white"
+            android:textSize="10dp"/>
         <TextView
             android:id="@+id/textViewGenre"
             android:layout_width="match_parent"
@@ -40,14 +46,17 @@
             android:layout_weight="1"
             android:gravity="left"
             android:text="genre"
-            android:layout_marginLeft="3dp"/>
+            android:layout_marginLeft="5dp"
+            android:textSize="10dp"
+            android:textColor="@color/white_less"/>
     </LinearLayout>
     <ImageView
         android:id="@+id/imageViewLike"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="4"
-        android:src="@drawable/like_disabled"/>
+        android:src="@drawable/like_disabled"
+        android:backgroundTint="@color/white_less"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -57,14 +66,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:src="@drawable/eye"/>
         <TextView
             android:id="@+id/textViewPlayedTimes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="조회 수"/>
+            android:text="조회 수"
+            android:textSize="10dp"
+            android:textColor="@color/white"/>
     </LinearLayout>
 
 </LinearLayout>

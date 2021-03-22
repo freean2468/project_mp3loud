@@ -7,6 +7,7 @@ import org.scalatra.{ActionResult, NotFound, Ok}
 import org.slf4j.LoggerFactory
 import slick.jdbc.JdbcBackend.Database
 import slick.jdbc.PostgresProfile.api._
+import org.json4s.JsonDSL._
 
 import scala.concurrent.Promise
 import scala.util.{Failure, Success, Try}
@@ -35,11 +36,27 @@ trait QuerySupport {
     prom.future
   }
 
-  def insertLike(db: Database, no: String, title: String, artist: String) = {
+  def toggleLike(db: Database, no: String, title: String, artist: String) = {
+    val INSERTED = 1;
+    val DELETED = 2;
+
     val prom = Promise[ActionResult]()
-    insert(db, Like(no, title, artist)) onComplete {
-      case Failure(e) => prom.failure(e)
-      case Success(s) => prom.complete(Try(Ok(s)))
+    findLike(db, no, title, artist) onComplete {
+      case Failure(e) => e.printStackTrace()
+      case Success(s) => s match {
+        case None => {
+          insert(db, Like(no, title, artist)) onComplete {
+            case Failure(e) => prom.failure(e)
+            case Success(s) => prom.complete(Try(Ok(("res" -> INSERTED) ~
+                ("title" -> title) ~ ("artist" -> artist))))
+          }
+        }
+        case Some(like) => {
+          delete(db, like)
+          prom.complete(Try(Ok(("res" -> DELETED) ~
+            ("title" -> title) ~ ("artist" -> artist))))
+        }
+      }
     }
     prom.future
   }
@@ -58,6 +75,9 @@ trait QuerySupport {
 
   def findMp3(db: Database, title: String, artist: String) =
     db.run(mp3s.filter(_.title === title).filter(_.artist === artist).result.headOption)
+
+  def findLike(db: Database, no: String, title: String, artist: String) =
+    db.run(likes.filter(d => d.no === no).filter(_.title === title).filter(_.artist === artist).result.headOption)
 
   def findLikes(db: Database, no: String) =
     db.run(likes.filter(d => d.no === no).result)
@@ -96,6 +116,21 @@ trait QuerySupport {
 //        convertedArray map (elem => logger.info(s"image.length : ${elem.image.length}"))
 
         prom.complete(Try(Ok(convertedArray)))
+      }
+    }
+    prom.future
+  }
+
+  def retrieveLike(db: Database, no: String, title: String, artist: String) = {
+    val prom = Promise[ActionResult]()
+    findLike(db, no, title, artist) onComplete {
+      case Failure(e) => {
+        prom.failure(e)
+        e.printStackTrace()
+      }
+      case Success(s) => s match {
+        case None => prom.complete(Try(NotFound()))
+        case Some(like) => prom.complete(Try(Ok(LikeConverted(like.title, like.artist))))
       }
     }
     prom.future
@@ -198,6 +233,6 @@ trait QuerySupport {
    *
    */
   def delete(db: Database, like:Like): Unit = {
-    db.run((likes filter { l => l.title === l.artist && l.artist === like.artist }).delete)
+    db.run((likes filter { l => l.title === like.title && l.artist === like.artist }).delete)
   }
 }

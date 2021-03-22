@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_left">
+    android:background="@drawable/background">
 
     <TextView
         android:layout_width="match_parent"
@@ -13,7 +13,8 @@
         android:layout_margin="40dp"
         android:gravity="center"
         android:text="mp3loud"
-        android:textSize="40sp"
+        android:textSize="40dp"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/buttonLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.662"
@@ -43,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text=""
+        android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/switchToggleServer"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

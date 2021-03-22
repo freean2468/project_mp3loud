@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.SystemClock;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.mirae.mp3loud.R;
 import com.mirae.mp3loud.helper.Util;
 
 import java.io.File;
@@ -21,12 +23,15 @@ public class ObjectMp3Player {
 
     private MediaPlayer mediaPlayer;
     private boolean clicked;
+    private boolean initialized;
+
     private FileDescriptor fileDescriptor;
     private Thread threadUi;
 
     private SeekBar seekBarPlay;
     private TextView textViewCurrentPosition;
     private TextView textViewRemainedPosition;
+    private ImageButton imageButtonTogglePlay;
 
     private ObjectMp3Player(){
         mediaPlayer = new MediaPlayer();
@@ -34,6 +39,7 @@ public class ObjectMp3Player {
             initUI();
         });
         clicked = false;
+        initialized = false;
     }
 
     public static ObjectMp3Player getInstance(Activity a) {
@@ -71,12 +77,14 @@ public class ObjectMp3Player {
         if (mediaPlayer != null) {
             mediaPlayer.start();
             updateUI();
+            imageButtonTogglePlay.setImageResource(R.drawable.pause);
         }
     }
 
     public void pause() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
+            imageButtonTogglePlay.setImageResource(R.drawable.play_arrow);
         }
     }
 
@@ -108,6 +116,7 @@ public class ObjectMp3Player {
         if (seekBarPlay != null) {
             seekBarPlay.setProgress(0);
             textViewCurrentPosition.setText("00:00");
+            this.imageButtonTogglePlay.setImageResource(R.drawable.play_arrow);
             if (mediaPlayer != null) {
                 textViewRemainedPosition.setText("00:00");
             }
@@ -116,10 +125,11 @@ public class ObjectMp3Player {
         }
     }
 
-    public void setUI(SeekBar sb, TextView tvCurrentPosition, TextView tvRemainedPosition) {
+    public void setUI(SeekBar sb, TextView tvCurrentPosition, TextView tvRemainedPosition, ImageButton ib) {
         this.seekBarPlay = sb;
         this.textViewCurrentPosition = tvCurrentPosition;
         this.textViewRemainedPosition = tvRemainedPosition;
+        this.imageButtonTogglePlay = ib;
     }
 
     public void interruptUiThread() {
@@ -134,5 +144,13 @@ public class ObjectMp3Player {
 
     public void setClicked(boolean clicked) {
         this.clicked = clicked;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 }

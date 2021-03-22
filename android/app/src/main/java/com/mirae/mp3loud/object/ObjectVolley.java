@@ -23,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import static com.mirae.mp3loud.caseclass.Mp3Info.TAKEN;
@@ -117,9 +119,6 @@ public class ObjectVolley {
 
 
 
-
-
-
     /**
      * 카카오 로그인 후 회원번호로 다시 자체 웹서버에 회원 정보를 요청하는 함수
      * @param no 카카오 회원 번호
@@ -127,9 +126,13 @@ public class ObjectVolley {
      * @param errorListener 응답 실패 시 Listener
      */
     public void requestKakaoLogin(String no, RequestLoginListener listener, StandardErrorListener errorListener) {
-        String url = hostName + ctx.getString(R.string.url_login) + "no=" + no;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
-        addToRequestQueue(request);
+        try {
+            String url = hostName + ctx.getString(R.string.url_login) + "no=" + URLEncoder.encode(no, "utf-8");
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
+            addToRequestQueue(request);
+        } catch (UnsupportedEncodingException uee) {
+            uee.printStackTrace();
+        }
     }
 
     /**
@@ -220,10 +223,14 @@ public class ObjectVolley {
 
 
     public void requestMp3(String title, String artist, RequestMp3Listener listener, StandardErrorListener errorListener) {
-        String url = hostName + ctx.getString(R.string.url_mp3) + "title=" + title + "&artist=" + artist;
-        Log.d("debug", url);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
-        addToRequestQueue(request);
+        try {
+            String url = hostName + ctx.getString(R.string.url_mp3) + "title=" + URLEncoder.encode(title, "utf-8") + "&artist=" + URLEncoder.encode(artist, "utf-8");
+            Log.d("debug", url);
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
+            addToRequestQueue(request);
+        } catch(UnsupportedEncodingException uee) {
+            uee.printStackTrace();
+        }
     }
 
     /**
@@ -259,19 +266,86 @@ public class ObjectVolley {
 
 
 
-
-
-    public void requestLike(String no,  RequestLikeListener listener, StandardErrorListener errorListener) {
-        String url = hostName + ctx.getString(R.string.url_like) + "no=" + no;
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
-        addToRequestQueue(request);
+    public void requestLike(String no, String title, String artist,  requestLikeListener listener, StandardErrorListener errorListener) {
+        try {
+            String url = hostName + ctx.getString(R.string.url_like) + "no=" + URLEncoder.encode(no, "utf-8") + "&title=" + URLEncoder.encode(title, "utf-8") + "&artist=" + URLEncoder.encode(artist, "utf-8");
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, listener, errorListener);
+            addToRequestQueue(request);
+        } catch (UnsupportedEncodingException uee) {
+            uee.printStackTrace();
+        }
     }
 
     /**
      * RequstLike 요청에 대한 응답 wrapper abstract class
      * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
      */
-    abstract public static class RequestLikeListener implements Response.Listener<JSONArray> {
+    abstract public static class requestLikeListener implements Response.Listener<JSONObject> {
+        private String title;
+        private String artist;
+
+        @Override
+        public void onResponse(JSONObject response) {
+            try {
+                title = response.get("title").toString();
+                artist = response.get("artist").toString();
+
+                if (title == null) {
+                    Log.d("debug", "title shouldn't be null!");
+                    throw new AssertionError("title shouldn't be null!");
+                }
+
+                if (artist == null) {
+                    Log.d("debug", "artist shouldn't be null!");
+                    throw new AssertionError("artist shouldn't be null!");
+                }
+
+                ArrayList<Mp3Info> playList =  AdapterPlayList.getInstance().getPlayList();
+                for (int j = 0; j < playList.size(); ++j) {
+                    Mp3Info mp3Info = playList.get(j);
+                    if (mp3Info.getTitle().equals(title) && mp3Info.getArtist().equals(artist)) {
+                        mp3Info.setLike(true);
+                        AdapterPlayList.getInstance().notifyItemChanged(j);
+                        break;
+                    }
+                }
+            } catch (JSONException je) {
+                je.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            jobToDo();
+        }
+
+        public abstract void jobToDo();
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getArtist() {
+            return artist;
+        }
+    }
+
+
+
+    public void requestLikeList(String no,  requestLikeListListener listener, StandardErrorListener errorListener) {
+        try {
+            String url = hostName + ctx.getString(R.string.url_like_list) + "no=" + URLEncoder.encode(no, "utf-8");
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null, listener, errorListener);
+            addToRequestQueue(request);
+        } catch(UnsupportedEncodingException uee) {
+            uee.printStackTrace();
+        }
+    }
+
+    /**
+     * RequstLike 요청에 대한 응답 wrapper abstract class
+     * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
+     */
+    abstract public static class requestLikeListListener implements Response.Listener<JSONArray> {
         @Override
         public void onResponse(JSONArray response) {
             try {
@@ -318,51 +392,66 @@ public class ObjectVolley {
         public abstract void jobToDo();
     }
 
-    public void requestInsertLike(String no, String title, String artist, RequestInsertLikeListener listener, StandardErrorListener errorListener) {
-        String url = hostName + ctx.getString(R.string.url_like_insert) + "no=" + no + "&title=" + title + "&artist=" + artist;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
-        addToRequestQueue(request);
+    public void requestToggleLike(String no, String title, String artist, RequestToggleLikeListener listener, StandardErrorListener errorListener) {
+        try {
+            String url = hostName + ctx.getString(R.string.url_like_toggle) + "no=" + URLEncoder.encode(no, "utf-8") + "&title=" + URLEncoder.encode(title, "utf-8") + "&artist=" + URLEncoder.encode(artist, "utf-8");
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
+            addToRequestQueue(request);
+        } catch (UnsupportedEncodingException uee) {
+            uee.printStackTrace();
+        }
     }
 
     /**
      * RequstLike 요청에 대한 응답 wrapper abstract class
      * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
      */
-    abstract public static class RequestInsertLikeListener implements Response.Listener<JSONObject> {
+    abstract public static class RequestToggleLikeListener implements Response.Listener<JSONObject> {
+        public static final int INSERTED = 1;
+        public static final int DELETED = 2;
+
+        private int result = 0;
+        private String title;
+        private String artist;
+
         @Override
         public void onResponse(JSONObject response) {
+            try {
+                result = response.getInt("res");
+                title = response.getString("title");
+                artist = response.getString("artist");
+            } catch(JSONException je) {
+                je.printStackTrace();
+            }
+
             jobToDo();
         }
 
         public abstract void jobToDo();
-    }
 
-    public void requestDeleteLike(String no, String title, String artist, RequestDeleteLikeListener listener, StandardErrorListener errorListener) {
-        String url = hostName + ctx.getString(R.string.url_like_delete) + "no=" + no + "&title=" + title + "&artist=" + artist;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
-        addToRequestQueue(request);
-    }
-
-    /**
-     * RequstLike 요청에 대한 응답 wrapper abstract class
-     * jobToDo 내용만 구현하고, 필드가 null인지 아닌지만 확인해서 사용하면 된다.
-     */
-    abstract public static class RequestDeleteLikeListener implements Response.Listener<JSONObject> {
-        @Override
-        public void onResponse(JSONObject response) {
-            jobToDo();
+        public int getResult() {
+            return result;
         }
 
-        public abstract void jobToDo();
-    }
+        public String getTitle() {
+            return title;
+        }
 
+        public String getArtist() {
+            return artist;
+        }
+    }
 
 
 
     public void requestIncrementPlayedTimes(String title, String artist, RequestPlayedTimesListener listener, StandardErrorListener errorListener) {
-        String url = hostName + ctx.getString(R.string.url_played_times_increment) + "title=" + title + "&artist=" + artist;
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
-        addToRequestQueue(request);
+        try {
+            String url = hostName + ctx.getString(R.string.url_played_times_increment) + "title=" + URLEncoder.encode(title, "utf-8") + "&artist=" + URLEncoder.encode(artist, "utf-8");
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
+            addToRequestQueue(request);
+        } catch (UnsupportedEncodingException uee) {
+            uee.printStackTrace();
+        }
     }
 
     /**

@@ -3,8 +3,15 @@
     <item>
         <shape
             android:shape="rectangle">
-            <gradient android:startColor="#F9FFE8"
-                android:endColor="#FFF7D6"/>
+            <gradient
+                android:startColor="#000000"
+                android:endColor="#000000"/>
+            <corners
+                android:radius="10dp"/>
+
+            <stroke
+                android:width="0.1dp"
+                android:color="#52EDEDED" />
         </shape>
     </item>
     <item
@@ -15,13 +22,7 @@
         <shape
             android:shape="rectangle">
             <corners
-                android:radius="10dp"
-                />
-            <stroke
-                android:dashGap="10px"
-                android:dashWidth="3px"
-                android:width="2dp"
-                android:color="#F4EFA3"
+                android:radius="20dp"
                 />
         </shape>
     </item>
