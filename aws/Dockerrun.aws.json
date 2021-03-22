@@ -8,5 +8,16 @@
     {
       "ContainerPort": "8080"
     }
-  ]
+  ],
+    {
+      "Sid": "ElasticBeanstalkHealthAccess",
+      "Action": [
+        "elasticbeanstalk:PutInstanceStatistics"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:elasticbeanstalk:*:*:application/*",
+        "arn:aws:elasticbeanstalk:*:*:environment/*"
+      ]
+    }
 }

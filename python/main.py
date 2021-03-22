@@ -19,6 +19,9 @@ import urllib.parse
 # Mac: Darwin
 # Windows: Windows
 
+awsHost = 'http://mp3loudv4-env.eba-ngusggxk.ap-northeast-2.elasticbeanstalk.com/file/upload/1?'
+localHost = 'http://127.0.0.1:8080/file/upload/1?'
+
 rootDir = os.getcwd()
 separater = ""
 
@@ -39,7 +42,7 @@ rootDir += separater + 'res'
 def upload_mp3(genre, title, artist):
     relativePath = "res" + separater + genre + separater
     params = {'genre': genre, 'title':title, 'artist':artist}
-    url = 'http://127.0.0.1:8080/file/upload/1?' + urllib.parse.urlencode(params)
+    url = awsHost + urllib.parse.urlencode(params)
     files = {
         'mp3': open(relativePath + artist + ' - ' + title + '.mp3', 'rb'),
         'image': open(relativePath + title + '.jpg', 'rb')

@@ -6,7 +6,7 @@ ThisBuild / organization := "com.mirae"
 lazy val hello = (project in file("."))
   .settings(
     name := "mp3loud",
-    version := "0.0.1",
+    version := "0.0.1-SNAPSHOT",
     libraryDependencies ++= Seq(
       "org.scalatra" %% "scalatra" % ScalatraVersion,
       "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test",
@@ -35,4 +35,4 @@ lazy val hello = (project in file("."))
 enablePlugins(SbtTwirl)
 enablePlugins(JettyPlugin)
 enablePlugins(JavaAppPackaging)
-enablePlugins(DockerPlugin)
+//enablePlugins(DockerPlugin)
