@@ -188,7 +188,7 @@ public class AdapterPlayList extends RecyclerView.Adapter<AdapterPlayList.Recycl
             FragmentDialogForMp3 fragmentDialogForMp3 = new FragmentDialogForMp3(mp3Info, getAdapterPosition());
             fragmentDialogForMp3.show(((FragmentActivity)context).getSupportFragmentManager(), "mp3");
 
-            ActivityMain.viewPager2.setCurrentItem(FRAGMENT_02);
+//            ActivityMain.viewPager2.setCurrentItem(FRAGMENT_02);
         }
 
         public ImageView getImageViewAlbumCover() { return imageViewAlbumCover; }

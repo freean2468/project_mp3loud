@@ -10,6 +10,7 @@ import requests
 import platform
 import os
 import json
+import urllib.parse
 
 # print(platform.system())
 
@@ -37,7 +38,8 @@ rootDir += separater + 'res'
 
 def upload_mp3(genre, title, artist):
     relativePath = "res" + separater + genre + separater
-    url = 'http://127.0.0.1:8080/file/upload/1?genre={}&title={}&artist={}'.format(genre, title, artist)
+    params = {'genre': genre, 'title':title, 'artist':artist}
+    url = 'http://127.0.0.1:8080/file/upload/1?' + urllib.parse.urlencode(params)
     files = {
         'mp3': open(relativePath + artist + ' - ' + title + '.mp3', 'rb'),
         'image': open(relativePath + title + '.jpg', 'rb')

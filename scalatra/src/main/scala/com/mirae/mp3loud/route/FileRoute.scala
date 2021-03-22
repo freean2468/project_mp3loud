@@ -38,9 +38,9 @@ trait FileRoute extends ScalatraBase with JacksonJsonSupport with FutureSupport 
    */
   post("/upload/:id") {
     val logger = LoggerFactory.getLogger(getClass)
-    val genre = params.getOrElse("genre", halt(400))
-    val title = params.getOrElse("title", halt(400))
-    val artist = params.getOrElse("artist", halt(400))
+    val genre = params.getOrElse("genre", halt(400)).trim
+    val title = params.getOrElse("title", halt(400)).trim
+    val artist = params.getOrElse("artist", halt(400)).trim
     val mp3 = fileParams.get("mp3")
     val image = fileParams.get("image")
 

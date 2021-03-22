@@ -18,10 +18,10 @@ public class Mp3Info {
 
     public Mp3Info(int state, String genre, String title, String artist, String image, boolean like, int playedTimes) {
         this.state = state;
-        this.genre = genre;
-        this.title = title;
-        this.artist = artist;
-        this.image = image;
+        this.genre = genre.trim();
+        this.title = title.trim();
+        this.artist = artist.trim();
+        this.image = image.trim();
         this.like = like;
         this.playedTimes = playedTimes;
         this.like = false;

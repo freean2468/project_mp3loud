@@ -38,7 +38,7 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
          * dayOfYear가 서버와 다르면 차단하는 로직이 필요할까?
          * 고민해보자.
          */
-        login(db, params.getOrElse("no", halt(400)))
+        login(db, params.getOrElse("no", halt(400)).trim)
       }
     }
   }
@@ -56,7 +56,7 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
     new AsyncResult() { override val is =
       Future {
         contentType = formats("json")
-        retrieveMp3(db, params.getOrElse("title", halt(400)), params.getOrElse("artist", halt(400)))
+        retrieveMp3(db, params.getOrElse("title", halt(400)).trim, params.getOrElse("artist", halt(400)).trim)
       }
     }
   }
@@ -65,9 +65,9 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
     new AsyncResult() { override val is =
       Future {
         contentType = formats("json")
-        retrieveLike(db, params.getOrElse("no", halt(400)),
-          params.getOrElse("title", halt(400)),
-          params.getOrElse("artist", halt(400)))
+        retrieveLike(db, params.getOrElse("no", halt(400)).trim,
+          params.getOrElse("title", halt(400)).trim,
+          params.getOrElse("artist", halt(400)).trim)
       }
     }
   }
@@ -76,7 +76,7 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
     new AsyncResult() { override val is =
       Future {
         contentType = formats("json")
-        retrieveLikeList(db, params.getOrElse("no", halt(400)))
+        retrieveLikeList(db, params.getOrElse("no", halt(400)).trim)
       }
     }
   }
@@ -85,9 +85,9 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
    *
    */
   post("/like/toggle/:id") {
-    val no = params.getOrElse("no", halt(400))
-    val title = params.getOrElse("title", halt(400))
-    val artist = params.getOrElse("artist", halt(400))
+    val no = params.getOrElse("no", halt(400)).trim
+    val title = params.getOrElse("title", halt(400)).trim
+    val artist = params.getOrElse("artist", halt(400)).trim
 
     new AsyncResult() { override val is =
       Future {
@@ -98,8 +98,8 @@ trait ServiceRoute extends ScalatraBase with JacksonJsonSupport with FutureSuppo
   }
 
   post("/played_times/:id") {
-    val title = params.getOrElse("title", halt(400))
-    val artist = params.getOrElse("artist", halt(400))
+    val title = params.getOrElse("title", halt(400)).trim
+    val artist = params.getOrElse("artist", halt(400)).trim
 
     increasePlayedTimes(db, title, artist)
   }

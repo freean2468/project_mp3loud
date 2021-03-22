@@ -117,11 +117,7 @@ public class ObjectMp3Player {
             seekBarPlay.setProgress(0);
             textViewCurrentPosition.setText("00:00");
             this.imageButtonTogglePlay.setImageResource(R.drawable.play_arrow);
-            if (mediaPlayer != null) {
-                textViewRemainedPosition.setText("00:00");
-            }
-            else
-                textViewRemainedPosition.setText(Util.secondsTommssFormat(mediaPlayer.getDuration()));
+            textViewRemainedPosition.setText(Util.secondsTommssFormat(mediaPlayer.getDuration()));
         }
     }
 

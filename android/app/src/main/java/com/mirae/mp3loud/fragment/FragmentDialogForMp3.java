@@ -2,10 +2,13 @@ package com.mirae.mp3loud.fragment;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -41,6 +44,7 @@ public class FragmentDialogForMp3 extends DialogFragment {
         TextView textViewProgress = view.findViewById(R.id.textView);
         textViewProgress.setText("mp3 다운로드 중");
         ProgressBar progressBar = view.findViewById(R.id.progressBar);
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.MULTIPLY);
 
         ObjectVolley.getInstance(getContext()).requestMp3(mp3Info.getTitle(), mp3Info.getArtist(), new ObjectVolley.RequestMp3Listener() {
             @Override
@@ -48,7 +52,7 @@ public class FragmentDialogForMp3 extends DialogFragment {
                 ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
                 objectMp3Player.init(getContext(), Util.convertBase64StringToByteArray(this.getMp3()));
                 dismiss();
-                //ActivityMain.viewPager2.setCurrentItem(FRAGMENT_02);
+                ActivityMain.viewPager2.setCurrentItem(FRAGMENT_02);
             }
         }, new ObjectVolley.StandardErrorListener() {
             @Override
@@ -63,5 +67,13 @@ public class FragmentDialogForMp3 extends DialogFragment {
 
         // Create the AlertDialog object and return it
         return builder.create();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        return view;
     }
 }

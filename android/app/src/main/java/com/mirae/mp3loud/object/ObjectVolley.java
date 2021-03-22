@@ -175,13 +175,11 @@ public class ObjectVolley {
                         throw new AssertionError("origin shouldn't be null!");
                     }
 
-                    String genre = mp3Info.get("genre").toString();
-                    String title = mp3Info.get("title").toString();
-                    String artist = mp3Info.get("artist").toString();
-                    String image = mp3Info.get("image").toString();
-                    int playedTimes = Integer.parseInt(mp3Info.get("playedTimes").toString());
-
-                    Log.d("debug", "playedTimes : " + playedTimes);
+                    String genre = mp3Info.get("genre").toString().trim();
+                    String title = mp3Info.get("title").toString().trim();
+                    String artist = mp3Info.get("artist").toString().trim();
+                    String image = mp3Info.get("image").toString().trim();
+                    int playedTimes = Integer.parseInt(mp3Info.get("playedTimes").toString().trim());
 
                     if (genre == null) {
                         Log.d("debug", "genre shouldn't be null!");
@@ -244,6 +242,7 @@ public class ObjectVolley {
         public void onResponse(JSONObject response) {
             try {
                 mp3 = response.get("mp3").toString();
+                Log.d("debug", "mp3.length() : " + mp3.length());
 
                 if (mp3 == null) {
                     Log.d("debug", "mp3 shouldn't be null!");
@@ -287,8 +286,8 @@ public class ObjectVolley {
         @Override
         public void onResponse(JSONObject response) {
             try {
-                title = response.get("title").toString();
-                artist = response.get("artist").toString();
+                title = response.get("title").toString().trim();
+                artist = response.get("artist").toString().trim();
 
                 if (title == null) {
                     Log.d("debug", "title shouldn't be null!");
@@ -357,8 +356,8 @@ public class ObjectVolley {
                         throw new AssertionError("origin shouldn't be null!");
                     }
 
-                    String title = like.get("title").toString();
-                    String artist = like.get("artist").toString();
+                    String title = like.get("title").toString().trim();
+                    String artist = like.get("artist").toString().trim();
 
                     if (title == null) {
                         Log.d("debug", "title shouldn't be null!");
@@ -418,8 +417,8 @@ public class ObjectVolley {
         public void onResponse(JSONObject response) {
             try {
                 result = response.getInt("res");
-                title = response.getString("title");
-                artist = response.getString("artist");
+                title = response.getString("title").trim();
+                artist = response.getString("artist").trim();
             } catch(JSONException je) {
                 je.printStackTrace();
             }

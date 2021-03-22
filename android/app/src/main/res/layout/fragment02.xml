@@ -102,6 +102,7 @@
                 android:text="title"
                 android:layout_marginLeft="60dp"
                 android:textSize="15dp"
+                android:gravity="center_vertical"
                 android:textColor="@color/white"/>
             <TextView
                 android:id="@+id/textViewArtist"
@@ -110,7 +111,8 @@
                 android:layout_weight="1"
                 android:text="artist"
                 android:layout_marginLeft="65dp"
-                android:textSize="13dp"
+                android:textSize="10dp"
+                android:gravity="center_vertical"
                 android:textColor="@color/white_less"/>
             <TextView
                 android:id="@+id/textViewGenre"
@@ -118,8 +120,9 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginLeft="65dp"
-                android:textSize="13dp"
+                android:textSize="10dp"
                 android:text="genre"
+                android:gravity="center_vertical"
                 android:textColor="@color/white_less"/>
         </LinearLayout>
         <ImageButton
@@ -178,7 +181,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/background"/>
+            android:background="@drawable/background"
+            android:scaleY="3"
+            android:scaleX="2"
+            android:rotation="180"
+            android:visibility="invisible"
+            android:src="@drawable/double_arrow"/>
         <ImageButton
             android:id="@+id/imageButtonTogglePlay"
             android:layout_width="match_parent"

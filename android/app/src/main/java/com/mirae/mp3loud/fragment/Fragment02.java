@@ -126,10 +126,10 @@ public class Fragment02 extends Fragment {
 
         int playedTimes = sharedPref.getInt(getString(R.string.shared_preferences_played_times_key), 0);
         int position = sharedPref.getInt(getString(R.string.shared_preferences_position_key), 0);
-        String title = sharedPref.getString(getString(R.string.shared_preferences_title_key), "no title");
-        String artist = sharedPref.getString(getString(R.string.shared_preferences_artist_key), "no artist");
-        String genre = sharedPref.getString(getString(R.string.shared_preferences_genre_key), "no genre");
-        String image = sharedPref.getString(getString(R.string.shared_preferences_image_key), "no image");
+        String title = sharedPref.getString(getString(R.string.shared_preferences_title_key), "no title").trim();
+        String artist = sharedPref.getString(getString(R.string.shared_preferences_artist_key), "no artist").trim();
+        String genre = sharedPref.getString(getString(R.string.shared_preferences_genre_key), "no genre").trim();
+        String image = sharedPref.getString(getString(R.string.shared_preferences_image_key), "no image").trim();
 
         setPlayer(new Mp3Info(Mp3Info.NOT_TAKEN_YET, genre, title, artist, image, false, playedTimes), position);
 
@@ -154,13 +154,13 @@ public class Fragment02 extends Fragment {
         if (objectMp3Player.isClicked() == true) {
             int playedTimes = sharedPref.getInt(getString(R.string.shared_preferences_played_times_key), 0);
             int position = sharedPref.getInt(getString(R.string.shared_preferences_position_key), 0);
-            String title = sharedPref.getString(getString(R.string.shared_preferences_title_key), "no title");
-            String artist = sharedPref.getString(getString(R.string.shared_preferences_artist_key), "no artist");
-            String genre = sharedPref.getString(getString(R.string.shared_preferences_genre_key), "no genre");
-            String image = sharedPref.getString(getString(R.string.shared_preferences_image_key), "no image");
+            String title = sharedPref.getString(getString(R.string.shared_preferences_title_key), "no title").trim();
+            String artist = sharedPref.getString(getString(R.string.shared_preferences_artist_key), "no artist").trim();
+            String genre = sharedPref.getString(getString(R.string.shared_preferences_genre_key), "no genre").trim();
+            String image = sharedPref.getString(getString(R.string.shared_preferences_image_key), "no image").trim();
 
             if (textViewArtist.getText().toString().equals(artist) && textViewTitle.getText().toString().equals(title)) {
-
+                Log.d("debug", "artist : '" + artist + "', title : '" + title+"'");
             } else {
                 objectMp3Player.pause();
 
@@ -168,7 +168,6 @@ public class Fragment02 extends Fragment {
                 objectVolley.requestMp3(title, artist, new ObjectVolley.RequestMp3Listener() {
                     @Override
                     public void jobToDo() {
-                        ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
                         objectMp3Player.init(getContext(), Util.convertBase64StringToByteArray(this.getMp3()));
                         objectMp3Player.setUI(seekBarPlay, textViewCurrentPosition, textViewRemainedPosition, imageButtonTogglePlay);
                         objectMp3Player.play();
@@ -238,23 +237,23 @@ public class Fragment02 extends Fragment {
             }
         });
 
-        imageButtonToStart.setOnClickListener(v -> {
-            ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
-            if (objectMp3Player.getMediaPlayer() != null) {
-             objectMp3Player.getMediaPlayer().seekTo(0);
-            }
-        });
-
-        imageButtonRepetition.setOnClickListener(v -> {
-            ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
-            if (objectMp3Player.getMediaPlayer() != null) {
-                if (objectMp3Player.getMediaPlayer().isLooping() == true) {
-                    objectMp3Player.getMediaPlayer().setLooping(false);
-                } else {
-                    objectMp3Player.getMediaPlayer().setLooping(true);
-                }
-            }
-        });
+//        imageButtonToStart.setOnClickListener(v -> {
+//            ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+//            if (objectMp3Player.getMediaPlayer() != null) {
+//             objectMp3Player.getMediaPlayer().seekTo(0);
+//            }
+//        });
+//
+//        imageButtonRepetition.setOnClickListener(v -> {
+//            ObjectMp3Player objectMp3Player = ObjectMp3Player.getInstance(getActivity());
+//            if (objectMp3Player.getMediaPlayer() != null) {
+//                if (objectMp3Player.getMediaPlayer().isLooping() == true) {
+//                    objectMp3Player.getMediaPlayer().setLooping(false);
+//                } else {
+//                    objectMp3Player.getMediaPlayer().setLooping(true);
+//                }
+//            }
+//        });
 
         seekBarPlay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
