@@ -1,23 +1,10 @@
-import eyed3
-
-import time
-import pathlib
-from os import path
-from eyed3 import id3
-from eyed3 import load
 from pydub import AudioSegment
 import requests
 import platform
 import os
-import json
 import urllib.parse
 
 # print(platform.system())
-
-# 플랫폼에 맞는 구분자
-# Linux: Linux
-# Mac: Darwin
-# Windows: Windows
 
 awsHost = 'http://mp3loudv4-env.eba-ngusggxk.ap-northeast-2.elasticbeanstalk.com/file/upload/1?'
 localHost = 'http://127.0.0.1:8080/file/upload/1?'
@@ -42,7 +29,7 @@ rootDir += separater + 'res'
 def upload_mp3(genre, title, artist):
     relativePath = "res" + separater + genre + separater
     params = {'genre': genre, 'title':title, 'artist':artist}
-    url = awsHost + urllib.parse.urlencode(params)
+    url = localHost + urllib.parse.urlencode(params)
     files = {
         'mp3': open(relativePath + artist + ' - ' + title + '.mp3', 'rb'),
         'image': open(relativePath + title + '.jpg', 'rb')
@@ -156,9 +143,4 @@ for subdir, dirs, files in os.walk(rootDir):
 # filePath = "{}\\1.mp3".format(pathlib.Path().absolute())
 #
 # track_info(fileName)
-#
-
-#
-#
-#
 #

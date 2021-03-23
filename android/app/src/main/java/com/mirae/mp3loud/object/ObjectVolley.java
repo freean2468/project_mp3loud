@@ -112,13 +112,6 @@ public class ObjectVolley {
         return imageLoader;
     }
 
-
-
-
-
-
-
-
     /**
      * 카카오 로그인 후 회원번호로 다시 자체 웹서버에 회원 정보를 요청하는 함수
      * @param no 카카오 회원 번호
@@ -147,11 +140,6 @@ public class ObjectVolley {
 
         public abstract void jobToDo();
     }
-
-
-
-
-
 
     public void requestMp3List(RequestMp3ListListener listener, StandardErrorListener errorListener) {
         String url = hostName + ctx.getString(R.string.url_mp3_list);
@@ -215,11 +203,6 @@ public class ObjectVolley {
         public abstract void jobToDo();
     }
 
-
-
-
-
-
     public void requestMp3(String title, String artist, RequestMp3Listener listener, StandardErrorListener errorListener) {
         try {
             String url = hostName + ctx.getString(R.string.url_mp3) + "title=" + URLEncoder.encode(title, "utf-8") + "&artist=" + URLEncoder.encode(artist, "utf-8");
@@ -262,8 +245,6 @@ public class ObjectVolley {
             return mp3;
         }
     }
-
-
 
     public void requestLike(String no, String title, String artist,  requestLikeListener listener, StandardErrorListener errorListener) {
         try {
@@ -327,8 +308,6 @@ public class ObjectVolley {
             return artist;
         }
     }
-
-
 
     public void requestLikeList(String no,  requestLikeListListener listener, StandardErrorListener errorListener) {
         try {
@@ -441,8 +420,6 @@ public class ObjectVolley {
         }
     }
 
-
-
     public void requestIncrementPlayedTimes(String title, String artist, RequestPlayedTimesListener listener, StandardErrorListener errorListener) {
         try {
             String url = hostName + ctx.getString(R.string.url_played_times_increment) + "title=" + URLEncoder.encode(title, "utf-8") + "&artist=" + URLEncoder.encode(artist, "utf-8");
@@ -465,10 +442,6 @@ public class ObjectVolley {
 
         public abstract void jobToDo();
     }
-
-
-
-
 
 
     /**

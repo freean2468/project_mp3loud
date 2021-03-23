@@ -17,17 +17,6 @@ create table if not exists mp3_table(
 	constraint pk_id primary key(title, artist)
 );
 
--- create table if not exists mp3_table(
--- 	id serial not null unique,
--- 	played_times int not null default 0,
--- 	title varchar(30) not null,
--- 	artist varchar(30) not null,
--- 	play_length_in_sec int not null,
--- 	sample bytea not null,
--- 	origin bytea not null,
--- 	constraint pk_id primary key(id)
--- );
-
 create table if not exists like_table(
 	no varchar(12) not null,
 	title varchar(30) not null,

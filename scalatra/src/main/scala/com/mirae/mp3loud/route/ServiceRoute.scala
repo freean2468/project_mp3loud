@@ -1,7 +1,6 @@
 package com.mirae.mp3loud.route
 
 import com.mirae.mp3loud.database.QuerySupport
-import com.mirae.mp3loud.database.Tables.Like
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json.JacksonJsonSupport
 import org.scalatra.servlet.{FileUploadSupport, MultipartConfig}
