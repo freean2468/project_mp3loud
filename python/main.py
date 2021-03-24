@@ -29,7 +29,7 @@ rootDir += separater + 'res'
 def upload_mp3(genre, title, artist):
     relativePath = "res" + separater + genre + separater
     params = {'genre': genre, 'title':title, 'artist':artist}
-    url = localHost + urllib.parse.urlencode(params)
+    url = awsHost + urllib.parse.urlencode(params)
     files = {
         'mp3': open(relativePath + artist + ' - ' + title + '.mp3', 'rb'),
         'image': open(relativePath + title + '.jpg', 'rb')

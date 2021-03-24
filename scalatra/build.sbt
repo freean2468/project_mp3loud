@@ -6,7 +6,7 @@ ThisBuild / organization := "com.mirae"
 lazy val hello = (project in file("."))
   .settings(
     name := "mp3loud",
-    version := "0.0.1-SNAPSHOT",
+    version := "0.0.1",
     libraryDependencies ++= Seq(
       "org.scalatra" %% "scalatra" % ScalatraVersion,
       "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test",
