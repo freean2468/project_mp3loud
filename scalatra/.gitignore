@@ -75,4 +75,4 @@ project/metals.sbt
 
 .idea
 
-src/main/resources/application.conf
+/src/main/resources/application.conf
