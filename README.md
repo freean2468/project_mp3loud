@@ -4,7 +4,7 @@
  ![java_fx_mysql](https://i.imgur.com/3B7S1NW.png)
  
  ### 제작 상세
- * 개발 기간 : 2020.03.17 ~ 2020.03.28
+ * 개발 기간 : 2021.03.17 ~ 2021.03.28
  * 개발 : 송훈일
  * 태스크 관리(trello) : https://trello.com/b/q9B3lXpS/project-mp3loud
  * 일정 관리(google sheets) : https://docs.google.com/spreadsheets/d/1Nz2VmDd-npezQMWdx8pgW7FzKBP7sRxVOCLgtbM-2Sw/edit#gid=1760667202
